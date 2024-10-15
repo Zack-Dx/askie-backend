@@ -1,0 +1,24 @@
+import { config } from "dotenv";
+config();
+
+const {
+  NODE_ENV,
+  PORT,
+  API_VERSION,
+  JWT_SECRET,
+  GOOGLE_CLIENT_ID,
+  GOOGLE_CLIENT_SECRET,
+  GITHUB_CLIENT_ID,
+  GITHUB_CLIENT_SECRET,
+} = process.env;
+
+export const CONFIG = {
+  NODE_ENV,
+  PORT,
+  API_VERSION,
+  JWT_SECRET,
+  GOOGLE_CLIENT_ID,
+  GOOGLE_CLIENT_SECRET,
+  GITHUB_CLIENT_ID,
+  GITHUB_CLIENT_SECRET,
+};

@@ -1,0 +1,93 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String       @id @default(uuid()) @unique
+  name         String
+  email        String       @unique
+  googleId     String?       @unique
+  githubId     String?      @unique
+  picture      String
+  role         Role         @default(user)
+  
+  // Social Links
+  linkedinUrl  String?      
+  githubUrl    String?      
+  portfolioUrl String?      
+  twitterUrl   String?      
+  
+  // Profile Info
+  questionsAsked   Int      @default(0) 
+  answersProvided  Int      @default(0) 
+  accountAge       Int?     
+  location         String?      
+  about            String?      
+  isPublic         Boolean      @default(true) 
+  
+  // Relations
+  questions    Question[]  
+  answers      Answer[]  
+  notifications Notification[] 
+  
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+}
+
+model Question {
+  id         String       @id @default(uuid()) @unique 
+  title      String
+  content    String
+  user       User        @relation(fields: [userId], references: [id])
+  userId     String     
+  answers    Answer[]
+  tags       QuestionTag[]
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
+}
+
+model Tag {
+  id         String @id @default(uuid()) @unique 
+  name       String @unique
+  questions  QuestionTag[]
+}
+
+model QuestionTag {
+  question     Question        @relation(fields: [questionId], references: [id])
+  questionId   String          
+  tag          Tag             @relation(fields: [tagId], references: [id])
+  tagId        String          
+
+  @@id([questionId, tagId]) 
+}
+
+model Answer {
+  id         String       @id @default(uuid()) @unique 
+  content    String
+  user       User        @relation(fields: [userId], references: [id])
+  userId     String      
+  question   Question    @relation(fields: [questionId], references: [id])
+  questionId String     
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
+}
+
+model Notification {
+  id         String       @id @default(uuid()) @unique 
+  message    String
+  user       User        @relation(fields: [userId], references: [id])
+  userId     String      
+  createdAt  DateTime    @default(now())
+  read       Boolean     @default(false) 
+  readAt     DateTime?  
+}
+
+enum Role {
+  user
+  admin
+}
