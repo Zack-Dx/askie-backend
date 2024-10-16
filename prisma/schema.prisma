@@ -15,6 +15,7 @@ model User {
   githubId     String?      @unique
   picture      String
   role         Role         @default(user)
+  password     String?    
   
   // Social Links
   linkedinUrl  String?      

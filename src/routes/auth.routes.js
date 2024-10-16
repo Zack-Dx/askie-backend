@@ -4,6 +4,7 @@ import { authenticateUser } from "../middlewares/auth.middleware.js";
 
 const authRouter = Router();
 
+authRouter.post("/signin", AuthController.signIn);
 authRouter.post("/signin/google", AuthController.signInWithGoogle);
 authRouter.post("/signin/github", AuthController.signInWithGithub);
 authRouter.post("/signout", authenticateUser, AuthController.signOut);

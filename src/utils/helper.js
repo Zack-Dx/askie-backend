@@ -1,4 +1,5 @@
 import jwt from "jsonwebtoken";
+import bcrypt from "bcrypt";
 import { CONFIG } from "../config/env/index.js";
 
 export function formatApiResponse(statusCode, status, data, message) {
@@ -29,4 +30,8 @@ export function verifyAccessToken(token) {
     console.error("Invalid or expired token:", error);
     return null;
   }
+}
+
+export async function comparePassword(dbPass, userPass) {
+  return await bcrypt.compare(dbPass, userPass);
 }

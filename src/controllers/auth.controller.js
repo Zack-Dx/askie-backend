@@ -1,9 +1,84 @@
 import { CONFIG } from "../config/env/index.js";
 import { prisma } from "../config/db/index.js";
 // import { oauth2Client } from "../config/auth/index.js";
-import { formatApiResponse, generateAccessToken } from "../utils/helper.js";
+import {
+  comparePassword,
+  formatApiResponse,
+  generateAccessToken,
+} from "../utils/helper.js";
 
 class AuthController {
+  static async signIn(req, res) {
+    const { email, password } = req.body;
+
+    try {
+      const user = await prisma.user.findUnique({
+        where: { email },
+      });
+
+      if (!user) {
+        return res
+          .status(404)
+          .json(formatApiResponse(404, false, null, "User not found"));
+      }
+
+      if (!user.password) {
+        return res
+          .status(400)
+          .json(
+            formatApiResponse(
+              400,
+              false,
+              null,
+              "Unable to authorize. Please check username/password combination",
+            ),
+          );
+      }
+
+      const isMatch = await comparePassword(password, user.password);
+
+      if (!isMatch) {
+        return res
+          .status(401)
+          .json(
+            formatApiResponse(
+              401,
+              false,
+              null,
+              "Unable to authorize. Please check username/password combination",
+            ),
+          );
+      }
+
+      const accessToken = generateAccessToken(user);
+
+      res.cookie("token", accessToken, {
+        httpOnly: true,
+        secure: CONFIG.NODE_ENV === "production",
+        expires: new Date(Date.now() + 24 * 60 * 60 * 1000), // 1 day
+        sameSite: CONFIG.NODE_ENV === "production" ? "none" : "lax",
+      });
+
+      return res.status(200).json(
+        formatApiResponse(
+          200,
+          true,
+          {
+            email: user.email,
+            name: user.name,
+            picture: user.picture,
+          },
+          "Login Successful",
+        ),
+      );
+    } catch (error) {
+      console.error("Error during default login:", error);
+      return res
+        .status(500)
+        .json(formatApiResponse(500, false, null, "Internal Server Error"));
+    }
+  }
+
   static async signInWithGoogle(req, res) {
     try {
       const { token } = req.body;
@@ -52,6 +127,7 @@ class AuthController {
         httpOnly: true,
         secure: CONFIG.NODE_ENV === "production",
         expires: new Date(Date.now() + 24 * 60 * 60 * 1000), // 1 day
+        sameSite: CONFIG.NODE_ENV === "production" ? "none" : "lax",
       });
 
       return res.status(200).json(
@@ -63,7 +139,7 @@ class AuthController {
             name: user.name,
             picture: user.picture,
           },
-          "Login Success",
+          "Login Successful",
         ),
       );
     } catch (error) {
@@ -169,6 +245,7 @@ class AuthController {
         httpOnly: true,
         secure: CONFIG.NODE_ENV === "production",
         expires: new Date(Date.now() + 24 * 60 * 60 * 1000), // 1 day
+        sameSite: CONFIG.NODE_ENV === "production" ? "none" : "lax",
       });
 
       return res.status(200).json(
@@ -180,7 +257,7 @@ class AuthController {
             name: user.name,
             picture: user.picture,
           },
-          "Login Success",
+          "Login Successful",
         ),
       );
     } catch (error) {
@@ -196,6 +273,7 @@ class AuthController {
       res.clearCookie("token", {
         httpOnly: true,
         secure: CONFIG.NODE_ENV === "production",
+        sameSite: CONFIG.NODE_ENV === "production" ? "none" : "lax",
       });
 
       return res
