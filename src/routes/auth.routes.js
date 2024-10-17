@@ -8,5 +8,6 @@ authRouter.post("/signin", AuthController.signIn);
 authRouter.post("/signin/google", AuthController.signInWithGoogle);
 authRouter.post("/signin/github", AuthController.signInWithGithub);
 authRouter.post("/signout", authenticateUser, AuthController.signOut);
+authRouter.post("/signup", AuthController.signUpUser);
 
 export { authRouter };

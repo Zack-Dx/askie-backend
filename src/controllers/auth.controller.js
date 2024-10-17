@@ -2,9 +2,11 @@ import { CONFIG } from "../config/env/index.js";
 import { prisma } from "../config/db/index.js";
 // import { oauth2Client } from "../config/auth/index.js";
 import {
+  calculateAccountAgeInDays,
   comparePassword,
   formatApiResponse,
   generateAccessToken,
+  hashPassword,
 } from "../utils/helper.js";
 
 class AuthController {
@@ -67,12 +69,23 @@ class AuthController {
             email: user.email,
             name: user.name,
             picture: user.picture,
+            role: user.role,
+            linkedinUrl: user.linkedinUrl,
+            githubUrl: user.githubUrl,
+            portfolioUrl: user.portfolioUrl,
+            twitterUrl: user.twitterUrl,
+            questionsAsked: user.questionsAsked,
+            answersProvided: user.answersProvided,
+            accountAge: calculateAccountAgeInDays(user.createdAt),
+            location: user.location,
+            about: user.about,
+            isPublic: user.isPublic,
           },
           "Login Successful",
         ),
       );
     } catch (error) {
-      console.error("Error during default login:", error);
+      console.error("Error during signin:", error);
       return res
         .status(500)
         .json(formatApiResponse(500, false, null, "Internal Server Error"));
@@ -138,6 +151,17 @@ class AuthController {
             email: user.email,
             name: user.name,
             picture: user.picture,
+            role: user.role,
+            linkedinUrl: user.linkedinUrl,
+            githubUrl: user.githubUrl,
+            portfolioUrl: user.portfolioUrl,
+            twitterUrl: user.twitterUrl,
+            questionsAsked: user.questionsAsked,
+            answersProvided: user.answersProvided,
+            accountAge: calculateAccountAgeInDays(user.createdAt),
+            location: user.location,
+            about: user.about,
+            isPublic: user.isPublic,
           },
           "Login Successful",
         ),
@@ -256,6 +280,17 @@ class AuthController {
             email: user.email,
             name: user.name,
             picture: user.picture,
+            role: user.role,
+            linkedinUrl: user.linkedinUrl,
+            githubUrl: user.githubUrl,
+            portfolioUrl: user.portfolioUrl,
+            twitterUrl: user.twitterUrl,
+            questionsAsked: user.questionsAsked,
+            answersProvided: user.answersProvided,
+            accountAge: calculateAccountAgeInDays(user.createdAt),
+            location: user.location,
+            about: user.about,
+            isPublic: user.isPublic,
           },
           "Login Successful",
         ),
@@ -268,7 +303,93 @@ class AuthController {
     }
   }
 
-  static async signOut(req, res) {
+  static async signUpUser(req, res) {
+    const { name, email, password } = req.body;
+
+    if (!name || !email || !password) {
+      return res
+        .status(400)
+        .json(
+          formatApiResponse(
+            400,
+            false,
+            null,
+            "Name, email, and password are required",
+          ),
+        );
+    }
+
+    try {
+      const existingUser = await prisma.user.findUnique({
+        where: { email },
+      });
+
+      if (existingUser) {
+        return res
+          .status(400)
+          .json(
+            formatApiResponse(
+              400,
+              false,
+              null,
+              "User with this email already exists",
+            ),
+          );
+      }
+
+      const hashedPass = await hashPassword(password);
+
+      const user = await prisma.user.create({
+        data: {
+          name,
+          email,
+          password: hashedPass,
+          picture:
+            "https://res.cloudinary.com/dvj8ajii0/image/upload/w_1000,c_fill,ar_1:1,g_auto,r_max,bo_5px_solid_red,b_rgb:262c35/v1729144694/download_v7f0vi.png",
+        },
+      });
+
+      const accessToken = generateAccessToken(user);
+
+      res.cookie("token", accessToken, {
+        httpOnly: true,
+        secure: CONFIG.NODE_ENV === "production",
+        expires: new Date(Date.now() + 24 * 60 * 60 * 1000), // 1 day
+        sameSite: CONFIG.NODE_ENV === "production" ? "none" : "lax",
+      });
+
+      return res.status(201).json(
+        formatApiResponse(
+          201,
+          true,
+          {
+            email: user.email,
+            name: user.name,
+            picture: user.picture,
+            role: user.role,
+            linkedinUrl: user.linkedinUrl,
+            githubUrl: user.githubUrl,
+            portfolioUrl: user.portfolioUrl,
+            twitterUrl: user.twitterUrl,
+            questionsAsked: user.questionsAsked,
+            answersProvided: user.answersProvided,
+            accountAge: calculateAccountAgeInDays(user.createdAt),
+            location: user.location,
+            about: user.about,
+            isPublic: user.isPublic,
+          },
+          "User signed up successfully",
+        ),
+      );
+    } catch (error) {
+      console.error("Error during signup:", error);
+      return res
+        .status(500)
+        .json(formatApiResponse(500, false, null, "Internal Server Error"));
+    }
+  }
+
+  static async signOut(_, res) {
     try {
       res.clearCookie("token", {
         httpOnly: true,

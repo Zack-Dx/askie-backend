@@ -35,3 +35,18 @@ export function verifyAccessToken(token) {
 export async function comparePassword(dbPass, userPass) {
   return await bcrypt.compare(dbPass, userPass);
 }
+
+export async function hashPassword(password, salt = 10) {
+  return await bcrypt.hash(password, salt);
+}
+
+export const calculateAccountAgeInDays = (createdAt) => {
+  const currentDate = new Date();
+  const creationDate = new Date(createdAt);
+
+  const timeDifference = currentDate - creationDate;
+
+  const accountAgeInDays = Math.floor(timeDifference / (1000 * 60 * 60 * 24));
+
+  return accountAgeInDays;
+};

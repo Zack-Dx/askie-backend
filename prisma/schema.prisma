@@ -11,25 +11,24 @@ model User {
   id           String       @id @default(uuid()) @unique
   name         String
   email        String       @unique
-  googleId     String?       @unique
-  githubId     String?      @unique
+  googleId     String?      @default("")
+  githubId     String?      @default("")
   picture      String
   role         Role         @default(user)
-  password     String?    
+  password     String?      @default("")
   
   // Social Links
-  linkedinUrl  String?      
-  githubUrl    String?      
-  portfolioUrl String?      
-  twitterUrl   String?      
+  linkedinUrl  String?    @default("")  
+  githubUrl    String?    @default("") 
+  portfolioUrl String?    @default("")  
+  twitterUrl   String?    @default("")  
   
   // Profile Info
   questionsAsked   Int      @default(0) 
   answersProvided  Int      @default(0) 
-  accountAge       Int?     
-  location         String?      
-  about            String?      
-  isPublic         Boolean      @default(true) 
+  location         String?  @default("")    
+  about            String?  @default("")
+  isPublic         Boolean  @default(true) 
   
   // Relations
   questions    Question[]  
@@ -85,7 +84,7 @@ model Notification {
   userId     String      
   createdAt  DateTime    @default(now())
   read       Boolean     @default(false) 
-  readAt     DateTime?  
+  readAt     DateTime?   @default(now())
 }
 
 enum Role {
