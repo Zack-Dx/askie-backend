@@ -1,5 +1,7 @@
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
+import fs from "node:fs/promises";
+import mediaUploader from "../config/media/index.js";
 import { CONFIG } from "../config/env/index.js";
 
 export function formatApiResponse(statusCode, status, data, message) {
@@ -49,4 +51,31 @@ export const calculateAccountAgeInDays = (createdAt) => {
   const accountAgeInDays = Math.floor(timeDifference / (1000 * 60 * 60 * 24));
 
   return accountAgeInDays;
+};
+
+export const removeFileFromDisk = async (path) => {
+  try {
+    const fileExists = await fs
+      .access(path)
+      .then(() => {
+        return true;
+      })
+      .catch(() => {
+        return false;
+      });
+    if (fileExists) {
+      await fs.unlink(path);
+    }
+  } catch (error) {
+    console.error(`Error while deleting file at path ${path}:`, error);
+    throw error;
+  }
+};
+
+export const uploadProfilePictureToCloud = async (path, user) => {
+  return await mediaUploader.uploader.upload(path, {
+    folder: "bugbee-users",
+    public_id: `user_${user.id}`,
+    overwrite: true,
+  });
 };

@@ -29,6 +29,7 @@ model User {
   location         String?  @default("")    
   about            String?  @default("")
   isPublic         Boolean  @default(true) 
+  profession       String?  @default("")
   
   // Relations
   questions    Question[]  

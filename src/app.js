@@ -6,6 +6,7 @@ import { authRouter } from "./routes/auth.routes.js";
 import { userRouter } from "./routes/user.routes.js";
 import { questionRouter } from "./routes/question.routes.js";
 import { notificationRouter } from "./routes/notification.routes.js";
+import { initMediaCloud } from "./config/media/index.js";
 
 const app = express();
 
@@ -26,6 +27,7 @@ app.use(
 app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+initMediaCloud();
 
 // Routes
 app.use(`/api/${CONFIG.API_VERSION}`, authRouter);

@@ -1,7 +1,11 @@
 import {
   calculateAccountAgeInDays,
   formatApiResponse,
+  removeFileFromDisk,
+  uploadProfilePictureToCloud,
 } from "../utils/helper.js";
+import mediaUploader from "../config/media/index.js";
+import { prisma } from "../config/db/index.js";
 
 class UserController {
   static async profile(req, res) {
@@ -28,6 +32,7 @@ class UserController {
               location: user.location,
               about: user.about,
               isPublic: user.isPublic,
+              profession: user.profession,
             },
             "User profile retrieved successfully",
           ),
@@ -39,6 +44,142 @@ class UserController {
         .json(formatApiResponse(404, false, null, "User profile not found"));
     } catch (error) {
       console.error("Error retrieving user profile:", error);
+      return res
+        .status(500)
+        .json(formatApiResponse(500, false, null, "Internal Server Error"));
+    }
+  }
+  static async updateUserProfileData(req, res) {
+    const userId = req.user.id;
+    const allowedFieldsToBeUpdated = [
+      "name",
+      "about",
+      "githubUrl",
+      "linkedinUrl",
+      "portfolioUrl",
+      "twitterUrl",
+      "location",
+      "isPublic",
+      "profession",
+    ];
+    const fields = Object.keys(req.body);
+
+    const invalidFields = fields.filter((field) => {
+      return !allowedFieldsToBeUpdated.includes(field);
+    });
+
+    if (invalidFields.length > 0) {
+      return res
+        .status(400)
+        .json(
+          formatApiResponse(
+            400,
+            false,
+            null,
+            `Not allowed to update these fields: ${invalidFields.join(", ")}`,
+          ),
+        );
+    }
+
+    try {
+      const user = await prisma.user.findUnique({
+        where: { id: userId },
+      });
+      if (!user) {
+        return res
+          .status(404)
+          .json(formatApiResponse(404, false, null, "User not found"));
+      }
+
+      const updatedData = {};
+      allowedFieldsToBeUpdated.forEach((field) => {
+        if (req.body[field] !== undefined) {
+          updatedData[field] = req.body[field];
+        }
+      });
+
+      const updatedUser = await prisma.user.update({
+        where: { id: userId },
+        data: updatedData,
+      });
+
+      const { createdAt, updatedAt, ...userProfileData } = updatedUser;
+      return res.status(200).json(
+        formatApiResponse(
+          200,
+          true,
+          {
+            ...userProfileData,
+            accountAge: calculateAccountAgeInDays(user.createdAt),
+          },
+          "User profile updated successfully",
+        ),
+      );
+    } catch (error) {
+      console.error("Error updating user profile:", error);
+      return res
+        .status(500)
+        .json(
+          formatApiResponse(
+            500,
+            false,
+            null,
+            "An error occurred while updating the profile",
+          ),
+        );
+    }
+  }
+  static async updateUserProfilePicture(req, res) {
+    const userId = req.user.id;
+    try {
+      const user = await prisma.user.findUnique({
+        where: { id: userId },
+      });
+
+      if (!user) {
+        return res
+          .status(404)
+          .json(formatApiResponse(404, false, null, "User not found."));
+      }
+
+      const picture = req.file;
+      if (!picture) {
+        return res
+          .status(400)
+          .json(formatApiResponse(400, false, null, "Picture not found."));
+      }
+
+      if (user.picture) {
+        const publicId = user.picture.split("/").pop().split(".")[0];
+        await mediaUploader.uploader.destroy(`bugbee-users/${publicId}`);
+      }
+
+      const uploadResult = await uploadProfilePictureToCloud(
+        picture.path,
+        user,
+      );
+
+      await removeFileFromDisk(picture.path);
+
+      const updatedUser = await prisma.user.update({
+        where: { id: req.user.id },
+        data: {
+          picture: uploadResult.secure_url,
+        },
+      });
+
+      return res
+        .status(200)
+        .json(
+          formatApiResponse(
+            200,
+            true,
+            { picture: updatedUser.picture },
+            "Profile picture updated successfully.",
+          ),
+        );
+    } catch (error) {
+      console.error("Error updating profile picture:", error);
       return res
         .status(500)
         .json(formatApiResponse(500, false, null, "Internal Server Error"));

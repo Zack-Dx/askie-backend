@@ -1,6 +1,7 @@
 import { CONFIG } from "../config/env/index.js";
 import { prisma } from "../config/db/index.js";
 // import { oauth2Client } from "../config/auth/index.js";
+
 import {
   calculateAccountAgeInDays,
   comparePassword,
@@ -80,6 +81,7 @@ class AuthController {
             location: user.location,
             about: user.about,
             isPublic: user.isPublic,
+            profession: user.profession,
           },
           "Login Successful",
         ),
@@ -162,6 +164,7 @@ class AuthController {
             location: user.location,
             about: user.about,
             isPublic: user.isPublic,
+            profession: user.profession,
           },
           "Login Successful",
         ),
@@ -291,6 +294,7 @@ class AuthController {
             location: user.location,
             about: user.about,
             isPublic: user.isPublic,
+            profession: user.profession,
           },
           "Login Successful",
         ),
@@ -377,6 +381,7 @@ class AuthController {
             location: user.location,
             about: user.about,
             isPublic: user.isPublic,
+            profession: user.profession,
           },
           "User signed up successfully",
         ),
