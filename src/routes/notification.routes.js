@@ -10,4 +10,10 @@ notificationRouter.get(
   NotificationController.getNotifications,
 );
 
+notificationRouter.post(
+  "/notifications/mark-all-as-read",
+  authenticateUser,
+  NotificationController.markAllNotificationsAsRead,
+);
+
 export { notificationRouter };

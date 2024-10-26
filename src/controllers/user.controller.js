@@ -103,6 +103,7 @@ class UserController {
         data: updatedData,
       });
 
+      // eslint-disable-next-line no-unused-vars
       const { createdAt, updatedAt, ...userProfileData } = updatedUser;
       return res.status(200).json(
         formatApiResponse(

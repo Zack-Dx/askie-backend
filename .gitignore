@@ -4,6 +4,9 @@
 #Dev-Tasks
 *.md
 
+#vs code
+.vscode
+
 ### Node ###
 # Logs
 logs

@@ -15,7 +15,7 @@ class AnswerController {
       if (!question) {
         return res
           .status(404)
-          .json(formatApiResponse(404, "error", null, "Question not found"));
+          .json(formatApiResponse(404, false, null, "Question not found"));
       }
 
       if (question.userId != userId) {
@@ -38,18 +38,13 @@ class AnswerController {
       return res
         .status(201)
         .json(
-          formatApiResponse(
-            201,
-            "success",
-            answer,
-            "Answer created successfully",
-          ),
+          formatApiResponse(201, true, answer, "Answer created successfully"),
         );
     } catch (error) {
       console.error("Error creating answer:", error);
       return res
         .status(500)
-        .json(formatApiResponse(500, "error", null, "Internal Server Error"));
+        .json(formatApiResponse(500, false, null, "Internal Server Error"));
     }
   }
   static async getAnswer(req, res) {
@@ -62,7 +57,7 @@ class AnswerController {
       if (!question) {
         return res
           .status(404)
-          .json(formatApiResponse(404, "error", null, "Question not found"));
+          .json(formatApiResponse(404, false, null, "Question not found"));
       }
 
       const answers = await prisma.answer.findMany({
@@ -83,7 +78,7 @@ class AnswerController {
         .json(
           formatApiResponse(
             200,
-            "success",
+            true,
             answers,
             "Answers retrieved successfully",
           ),
@@ -92,7 +87,7 @@ class AnswerController {
       console.error("Error fetching answers:", error);
       return res
         .status(500)
-        .json(formatApiResponse(500, "error", null, "Internal Server Error"));
+        .json(formatApiResponse(500, false, null, "Internal Server Error"));
     }
   }
   static async updateAnswer(req, res) {
@@ -107,7 +102,7 @@ class AnswerController {
       if (!answer) {
         return res
           .status(404)
-          .json(formatApiResponse(404, "error", null, "Answer not found"));
+          .json(formatApiResponse(404, false, null, "Answer not found"));
       }
 
       if (answer.userId !== userId) {
@@ -116,7 +111,7 @@ class AnswerController {
           .json(
             formatApiResponse(
               403,
-              "error",
+              false,
               null,
               "You do not have permission to update this answer",
             ),
@@ -133,7 +128,7 @@ class AnswerController {
         .json(
           formatApiResponse(
             200,
-            "success",
+            true,
             updatedAnswer,
             "Answer updated successfully",
           ),
@@ -142,7 +137,7 @@ class AnswerController {
       console.error("Error updating answer:", error);
       return res
         .status(500)
-        .json(formatApiResponse(500, "error", null, "Internal Server Error"));
+        .json(formatApiResponse(500, false, null, "Internal Server Error"));
     }
   }
   static async deleteAnswer(req, res) {
@@ -156,7 +151,7 @@ class AnswerController {
       if (!answer) {
         return res
           .status(404)
-          .json(formatApiResponse(404, "error", null, "Answer not found"));
+          .json(formatApiResponse(404, false, null, "Answer not found"));
       }
       if (answer.userId !== userId) {
         return res
@@ -164,7 +159,7 @@ class AnswerController {
           .json(
             formatApiResponse(
               403,
-              "error",
+              false,
               null,
               "You do not have permission to delete this answer",
             ),
@@ -178,18 +173,13 @@ class AnswerController {
       return res
         .status(200)
         .json(
-          formatApiResponse(
-            200,
-            "success",
-            null,
-            "Answer deleted successfully",
-          ),
+          formatApiResponse(200, true, null, "Answer deleted successfully"),
         );
     } catch (error) {
       console.error("Error deleting answer:", error);
       return res
         .status(500)
-        .json(formatApiResponse(500, "error", null, "Internal Server Error"));
+        .json(formatApiResponse(500, false, null, "Internal Server Error"));
     }
   }
 }
