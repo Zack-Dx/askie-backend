@@ -14,7 +14,7 @@ class QuestionController {
               400,
               false,
               null,
-              "Title and content are required",
+              "Title and Content are required",
             ),
           );
       }
@@ -23,7 +23,26 @@ class QuestionController {
         data: {
           title,
           content,
-          userId,
+          user: { connect: { id: userId } },
+        },
+        include: {
+          tags: {
+            select: {
+              tag: {
+                select: {
+                  name: true,
+                },
+              },
+              tagId: true,
+            },
+          },
+          user: {
+            select: {
+              name: true,
+              picture: true,
+              id: true,
+            },
+          },
         },
       });
 
