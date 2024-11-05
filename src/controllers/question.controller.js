@@ -43,8 +43,20 @@ class QuestionController {
               id: true,
             },
           },
+          votes: {
+            select: {
+              value: true,
+            },
+          },
+          answers: true,
         },
       });
+
+      const formattedQuestion = {
+        ...newQuestion,
+        upvoteCount: 0,
+        downvoteCount: 0,
+      };
 
       return res
         .status(201)
@@ -52,7 +64,7 @@ class QuestionController {
           formatApiResponse(
             201,
             true,
-            newQuestion,
+            formattedQuestion,
             "Question created successfully",
           ),
         );
@@ -63,10 +75,12 @@ class QuestionController {
         .json(formatApiResponse(500, false, null, "Internal Server Error"));
     }
   }
+
   static async getAllQuestions(req, res) {
     try {
       const questions = await prisma.question.findMany({
         include: {
+          answers: true,
           tags: {
             select: {
               tag: {
@@ -84,10 +98,31 @@ class QuestionController {
               id: true,
             },
           },
+          votes: {
+            select: {
+              value: true,
+            },
+          },
         },
         orderBy: {
           createdAt: "desc",
         },
+      });
+
+      const formattedQuestions = questions.map((question) => {
+        const upvoteCount = question.votes.reduce((acc, vote) => {
+          return vote.value === 1 ? acc + 1 : acc;
+        }, 0);
+
+        const downvoteCount = question.votes.reduce((acc, vote) => {
+          return vote.value === -1 ? acc + 1 : acc;
+        }, 0);
+
+        return {
+          ...question,
+          upvoteCount,
+          downvoteCount,
+        };
       });
 
       return res
@@ -96,7 +131,7 @@ class QuestionController {
           formatApiResponse(
             200,
             true,
-            questions,
+            formattedQuestions,
             "Questions retrieved successfully",
           ),
         );
@@ -107,6 +142,7 @@ class QuestionController {
         .json(formatApiResponse(500, false, null, "Internal Server Error"));
     }
   }
+
   static async getSpecificQuestion(req, res) {
     try {
       const { id } = req.params;
@@ -130,21 +166,42 @@ class QuestionController {
               id: true,
             },
           },
+          votes: {
+            select: {
+              value: true,
+            },
+          },
           answers: true,
         },
       });
+
       if (!question) {
         return res
           .status(404)
           .json(formatApiResponse(404, false, null, "Question not found"));
       }
+
+      const upvoteCount = question.votes.reduce((acc, vote) => {
+        return vote.value === 1 ? acc + 1 : acc;
+      }, 0);
+
+      const downvoteCount = question.votes.reduce((acc, vote) => {
+        return vote.value === -1 ? acc + 1 : acc;
+      }, 0);
+
+      const formattedQuestion = {
+        ...question,
+        upvoteCount,
+        downvoteCount,
+      };
+
       return res
         .status(200)
         .json(
           formatApiResponse(
             200,
             true,
-            question,
+            formattedQuestion,
             "Question retrieved successfully",
           ),
         );
@@ -155,6 +212,7 @@ class QuestionController {
         .json(formatApiResponse(500, false, null, "Internal Server Error"));
     }
   }
+
   static async updateQuestion(req, res) {
     try {
       const { id } = req.params;

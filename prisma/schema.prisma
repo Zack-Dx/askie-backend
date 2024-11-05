@@ -1,11 +1,12 @@
 generator client {
   provider = "prisma-client-js"
 }
-
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+
 }
+
 
 model User {
   id           String       @id @default(uuid()) @unique
@@ -16,76 +17,87 @@ model User {
   picture      String
   role         Role         @default(user)
   password     String?      @default("")
-  
-  // Social Links
-  linkedinUrl  String?    @default("")  
-  githubUrl    String?    @default("") 
-  portfolioUrl String?    @default("")  
-  twitterUrl   String?    @default("")  
-  
-  // Profile Info
+  linkedinUrl  String?      @default("")  
+  githubUrl    String?      @default("") 
+  portfolioUrl String?      @default("")  
+  twitterUrl   String?      @default("")  
   questionsAsked   Int      @default(0) 
   answersProvided  Int      @default(0) 
   location         String?  @default("")    
   about            String?  @default("")
   isPublic         Boolean  @default(true) 
   profession       String?  @default("")
-  
-  // Relations
-  questions    Question[]  
-  answers      Answer[]  
-  notifications Notification[] 
-  
-  createdAt    DateTime     @default(now())
-  updatedAt    DateTime     @updatedAt
+  questions        Question[]  
+  answers          Answer[]  
+  notifications    Notification[] 
+  votes            Vote[]   
+  createdAt        DateTime     @default(now())
+  updatedAt        DateTime     @updatedAt
 }
 
 model Question {
-  id         String       @id @default(uuid()) @unique 
-  title      String
-  content    String
-  user       User        @relation(fields: [userId], references: [id])
-  userId     String     
-  answers    Answer[]
-  tags       QuestionTag[]
-  createdAt  DateTime    @default(now())
-  updatedAt  DateTime    @updatedAt
-}
-
-model Tag {
-  id         String @id @default(uuid()) @unique 
-  name       String @unique
-  questions  QuestionTag[]
-}
-
-model QuestionTag {
-  question     Question        @relation(fields: [questionId], references: [id])
-  questionId   String          
-  tag          Tag             @relation(fields: [tagId], references: [id])
-  tagId        String          
-
-  @@id([questionId, tagId]) 
+  id          String       @id @default(uuid()) @unique 
+  title       String
+  content     String
+  context     String        @default("")
+  user        User         @relation(fields: [userId], references: [id])
+  userId      String     
+  answers     Answer[]    
+  tags        QuestionTag[] 
+  votes       Vote[]      
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
 }
 
 model Answer {
-  id         String       @id @default(uuid()) @unique 
-  content    String
-  user       User        @relation(fields: [userId], references: [id])
-  userId     String      
-  question   Question    @relation(fields: [questionId], references: [id])
-  questionId String     
-  createdAt  DateTime    @default(now())
-  updatedAt  DateTime    @updatedAt
+  id          String       @id @default(uuid()) @unique 
+  content     String
+  user        User         @relation(fields: [userId], references: [id])
+  userId      String      
+  question    Question     @relation(fields: [questionId], references: [id])
+  questionId  String     
+  votes       Vote[]      
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+}
+
+model Vote {
+  id          String     @id @default(uuid()) @unique
+  user        User       @relation(fields: [userId], references: [id])
+  userId      String
+  question    Question?  @relation(fields: [questionId], references: [id])
+  questionId  String?
+  answer      Answer?    @relation(fields: [answerId], references: [id])
+  answerId    String?
+  value       Int        
+  createdAt   DateTime   @default(now())
+
+  @@unique([userId, questionId]) 
+  @@unique([userId, answerId])   
 }
 
 model Notification {
-  id         String       @id @default(uuid()) @unique 
-  message    String
-  user       User        @relation(fields: [userId], references: [id])
-  userId     String      
-  createdAt  DateTime    @default(now())
-  read       Boolean     @default(false) 
-  readAt     DateTime?   @default(now())
+  id        String     @id @default(uuid()) @unique
+  content   String
+  user      User       @relation(fields: [userId], references: [id])
+  userId    String
+  href      String     @default("") 
+  read      Boolean    @default(false) 
+  createdAt DateTime   @default(now())
+}
+
+model QuestionTag {
+  id         String     @id @default(uuid()) @unique
+  question   Question   @relation(fields: [questionId], references: [id])
+  questionId String
+  tag        Tag        @relation(fields: [tagId], references: [id])
+  tagId      String
+}
+
+model Tag {
+  id          String       @id @default(uuid()) @unique
+  name        String       @unique
+  questions   QuestionTag[]
 }
 
 enum Role {
