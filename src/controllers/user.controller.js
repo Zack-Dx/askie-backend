@@ -8,7 +8,7 @@ import mediaUploader from "../config/media/index.js";
 import { prisma } from "../config/db/index.js";
 
 class UserController {
-  static async profile(req, res) {
+  static async profile(req, res, next) {
     try {
       const user = req.user;
 
@@ -43,13 +43,10 @@ class UserController {
         .status(404)
         .json(formatApiResponse(404, false, null, "User profile not found"));
     } catch (error) {
-      console.error("Error retrieving user profile:", error);
-      return res
-        .status(500)
-        .json(formatApiResponse(500, false, null, "Internal Server Error"));
+      next(error);
     }
   }
-  static async updateUserProfileData(req, res) {
+  static async updateUserProfileData(req, res, next) {
     const userId = req.user.id;
     const allowedFieldsToBeUpdated = [
       "name",
@@ -117,20 +114,10 @@ class UserController {
         ),
       );
     } catch (error) {
-      console.error("Error updating user profile:", error);
-      return res
-        .status(500)
-        .json(
-          formatApiResponse(
-            500,
-            false,
-            null,
-            "An error occurred while updating the profile",
-          ),
-        );
+      next(error);
     }
   }
-  static async updateUserProfilePicture(req, res) {
+  static async updateUserProfilePicture(req, res, next) {
     const userId = req.user.id;
     try {
       const user = await prisma.user.findUnique({
@@ -180,10 +167,7 @@ class UserController {
           ),
         );
     } catch (error) {
-      console.error("Error updating profile picture:", error);
-      return res
-        .status(500)
-        .json(formatApiResponse(500, false, null, "Internal Server Error"));
+      next(error);
     }
   }
 }

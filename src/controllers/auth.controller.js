@@ -11,7 +11,7 @@ import {
 } from "../utils/helper.js";
 
 class AuthController {
-  static async signIn(req, res) {
+  static async signIn(req, res, next) {
     const { email, password } = req.body;
 
     try {
@@ -87,14 +87,11 @@ class AuthController {
         ),
       );
     } catch (error) {
-      console.error("Error during signin:", error);
-      return res
-        .status(500)
-        .json(formatApiResponse(500, false, null, "Internal Server Error"));
+      next(error);
     }
   }
 
-  static async signInWithGoogle(req, res) {
+  static async signInWithGoogle(req, res, next) {
     try {
       const { token } = req.body;
 
@@ -170,27 +167,11 @@ class AuthController {
         ),
       );
     } catch (error) {
-      console.error("Error during google login:", error);
-      // if (error.message.includes("Token used too late")) {
-      //   return res
-      //     .status(401)
-      //     .json(
-      //       formatApiResponse(
-      //         401,
-      //         false,
-      //         null,
-      //         "Token expired, please login again",
-      //       ),
-      //     );
-      // }
-
-      return res
-        .status(500)
-        .json(formatApiResponse(500, false, null, "Internal Server Error"));
+      next(error);
     }
   }
 
-  static async signInWithGithub(req, res) {
+  static async signInWithGithub(req, res, next) {
     try {
       const { code } = req.body;
 
@@ -300,14 +281,11 @@ class AuthController {
         ),
       );
     } catch (error) {
-      console.error("Error during GitHub login:", error);
-      return res
-        .status(500)
-        .json(formatApiResponse(500, false, null, "Internal Server Error"));
+      next(error);
     }
   }
 
-  static async signUpUser(req, res) {
+  static async signUpUser(req, res, next) {
     const { name, email, password } = req.body;
 
     if (!name || !email || !password) {
@@ -387,14 +365,11 @@ class AuthController {
         ),
       );
     } catch (error) {
-      console.error("Error during signup:", error);
-      return res
-        .status(500)
-        .json(formatApiResponse(500, false, null, "Internal Server Error"));
+      next(error);
     }
   }
 
-  static async signOut(_, res) {
+  static async signOut(_, res, next) {
     try {
       res.clearCookie("token", {
         httpOnly: true,
@@ -406,10 +381,7 @@ class AuthController {
         .status(200)
         .json(formatApiResponse(200, true, null, "Logout successful"));
     } catch (error) {
-      console.error("Error during logout:", error);
-      return res
-        .status(500)
-        .json(formatApiResponse(500, false, null, "Internal Server Error"));
+      next(error);
     }
   }
 }

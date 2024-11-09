@@ -1,7 +1,7 @@
 import { prisma } from "../config/db/index.js";
 import { formatApiResponse } from "../utils/helper.js";
 class QuestionController {
-  static async createQuestion(req, res) {
+  static async createQuestion(req, res, next) {
     try {
       const { title, content } = req.body;
       const userId = req.user.id;
@@ -69,14 +69,11 @@ class QuestionController {
           ),
         );
     } catch (error) {
-      console.error("Error creating question:", error);
-      return res
-        .status(500)
-        .json(formatApiResponse(500, false, null, "Internal Server Error"));
+      next(error);
     }
   }
 
-  static async getAllQuestions(req, res) {
+  static async getAllQuestions(req, res, next) {
     try {
       const questions = await prisma.question.findMany({
         include: {
@@ -136,14 +133,11 @@ class QuestionController {
           ),
         );
     } catch (error) {
-      console.error("Error retrieving questions:", error);
-      return res
-        .status(500)
-        .json(formatApiResponse(500, false, null, "Internal Server Error"));
+      next(error);
     }
   }
 
-  static async getSpecificQuestion(req, res) {
+  static async getSpecificQuestion(req, res, next) {
     try {
       const { id } = req.params;
       const question = await prisma.question.findUnique({
@@ -206,14 +200,11 @@ class QuestionController {
           ),
         );
     } catch (error) {
-      console.error("Error retrieving question:", error);
-      return res
-        .status(500)
-        .json(formatApiResponse(500, false, null, "Internal Server Error"));
+      next(error);
     }
   }
 
-  static async updateQuestion(req, res) {
+  static async updateQuestion(req, res, next) {
     try {
       const { id } = req.params;
       const userId = req.user.id;
@@ -279,13 +270,10 @@ class QuestionController {
           ),
         );
     } catch (error) {
-      console.error("Error updating question:", error);
-      return res
-        .status(500)
-        .json(formatApiResponse(500, false, null, "Internal Server Error"));
+      next(error);
     }
   }
-  static async deleteQuestion(req, res) {
+  static async deleteQuestion(req, res, next) {
     try {
       const { id } = req.params;
       const userId = req.user.id;
@@ -323,10 +311,7 @@ class QuestionController {
           formatApiResponse(200, true, null, "Question deleted successfully"),
         );
     } catch (error) {
-      console.error("Error deleting question:", error);
-      return res
-        .status(500)
-        .json(formatApiResponse(500, false, null, "Internal Server Error"));
+      next(error);
     }
   }
 }

@@ -2,7 +2,7 @@ import { prisma } from "../config/db/index.js";
 import { formatApiResponse } from "../utils/helper.js";
 
 class NotificationController {
-  static async getNotifications(req, res) {
+  static async getNotifications(req, res, next) {
     try {
       const userId = req.user.id;
       const notifications = await prisma.notification.findMany({
@@ -27,14 +27,11 @@ class NotificationController {
           ),
         );
     } catch (error) {
-      console.error("Error fetching notifications:", error);
-      return res
-        .status(500)
-        .json(formatApiResponse(500, false, null, "Internal Server Error"));
+      next(error);
     }
   }
 
-  static async markAllNotificationsAsRead(req, res) {
+  static async markAllNotificationsAsRead(req, res, next) {
     try {
       const userId = req.user.id;
       await prisma.notification.updateMany({
@@ -53,10 +50,7 @@ class NotificationController {
           ),
         );
     } catch (error) {
-      console.error("Error marking notifications as read:", error);
-      return res
-        .status(500)
-        .json(formatApiResponse(500, false, null, "Internal Server Error"));
+      next(error);
     }
   }
 }

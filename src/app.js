@@ -7,6 +7,7 @@ import { userRouter } from "./routes/user.routes.js";
 import { questionRouter } from "./routes/question.routes.js";
 import { notificationRouter } from "./routes/notification.routes.js";
 import { initMediaCloud } from "./config/media/index.js";
+import { errorHandler } from "./middlewares/error.middleware.js";
 
 const app = express();
 
@@ -35,6 +36,8 @@ app.use(`/api/${CONFIG.API_VERSION}`, userRouter);
 app.use(`/api/${CONFIG.API_VERSION}`, questionRouter);
 app.use(`/api/${CONFIG.API_VERSION}`, notificationRouter);
 
+// Handlers
+app.use(errorHandler);
 app.use((_, res) => {
   return res.status(404).json({ message: "Route not found." });
 });
