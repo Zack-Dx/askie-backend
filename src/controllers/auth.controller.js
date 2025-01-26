@@ -67,6 +67,7 @@ class AuthController {
           200,
           true,
           {
+            id: user.id,
             email: user.email,
             name: user.name,
             picture: user.picture,
@@ -147,6 +148,7 @@ class AuthController {
           200,
           true,
           {
+            id: user.id,
             email: user.email,
             name: user.name,
             picture: user.picture,
@@ -261,6 +263,7 @@ class AuthController {
           200,
           true,
           {
+            id: user.id,
             email: user.email,
             name: user.name,
             picture: user.picture,
@@ -345,6 +348,7 @@ class AuthController {
           201,
           true,
           {
+            id: user.id,
             email: user.email,
             name: user.name,
             picture: user.picture,

@@ -279,7 +279,7 @@ class QuestionController {
       const userId = req.user.id;
 
       const question = await prisma.question.findUnique({
-        where: { id: parseInt(id) },
+        where: { id },
       });
 
       if (!question) {
@@ -302,7 +302,7 @@ class QuestionController {
       }
 
       await prisma.question.delete({
-        where: { id: parseInt(id) },
+        where: { id },
       });
 
       return res
