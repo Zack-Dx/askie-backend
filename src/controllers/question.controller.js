@@ -211,7 +211,7 @@ class QuestionController {
       const { title, content } = req.body;
 
       const question = await prisma.question.findUnique({
-        where: { id: parseInt(id) },
+        where: { id },
       });
 
       if (!question) {
@@ -233,7 +233,7 @@ class QuestionController {
       }
 
       const updatedQuestion = await prisma.question.update({
-        where: { id: parseInt(id) },
+        where: { id },
         data: {
           title: title || question.title,
           content: content || question.content,
