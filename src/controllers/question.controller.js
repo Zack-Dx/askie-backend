@@ -107,18 +107,19 @@ class QuestionController {
       });
 
       const formattedQuestions = questions.map((question) => {
-        const upvoteCount = question.votes.reduce((acc, vote) => {
-          return vote.value === 1 ? acc + 1 : acc;
-        }, 0);
+        let voteCount = 0;
 
-        const downvoteCount = question.votes.reduce((acc, vote) => {
-          return vote.value === -1 ? acc + 1 : acc;
-        }, 0);
+        question.votes.forEach((vote) => {
+          if (vote.value === 1) {
+            voteCount++;
+          } else {
+            voteCount--;
+          }
+        });
 
         return {
           ...question,
-          upvoteCount,
-          downvoteCount,
+          votes: voteCount,
         };
       });
 
