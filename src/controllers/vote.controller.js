@@ -29,20 +29,22 @@ class VoteController {
       });
 
       if (existingVote) {
-        if (existingVote.value == value) {
+        if (existingVote.value === value) {
+          await prisma.vote.delete({ where: { id: existingVote.id } });
+
           return res
             .status(200)
             .json(
               formatApiResponse(
                 200,
                 true,
-                null,
-                `You already ${value == 1 ? "upvoted" : "downvoted"} the question`,
+                { value: -value },
+                `Vote removed successfully`,
               ),
             );
         }
 
-        const updatedVote = await prisma.vote.update({
+        await prisma.vote.update({
           where: { id: existingVote.id },
           data: { value },
         });
@@ -51,15 +53,15 @@ class VoteController {
           .status(200)
           .json(
             formatApiResponse(
-              200,
+              201,
               true,
-              { vote: updatedVote },
+              { value },
               `${value == 1 ? "Upvoted" : "Downvoted"} successfully`,
             ),
           );
       }
 
-      const newVote = await prisma.vote.create({
+      await prisma.vote.create({
         data: {
           value,
           questionId: id,
@@ -73,7 +75,7 @@ class VoteController {
           formatApiResponse(
             201,
             true,
-            newVote,
+            { value },
             `${value == 1 ? "Upvoted" : "Downvoted"} successfully`,
           ),
         );

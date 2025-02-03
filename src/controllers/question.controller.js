@@ -107,15 +107,9 @@ class QuestionController {
       });
 
       const formattedQuestions = questions.map((question) => {
-        let voteCount = 0;
-
-        question.votes.forEach((vote) => {
-          if (vote.value === 1) {
-            voteCount++;
-          } else {
-            voteCount--;
-          }
-        });
+        let voteCount = question.votes.reduce((count, vote) => {
+          return count + vote.value;
+        }, 0);
 
         return {
           ...question,
