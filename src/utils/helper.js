@@ -83,7 +83,7 @@ export const uploadProfilePictureToCloud = async (path, user) => {
 
 export const getVoteCount = async (_id, type) => {
   if (!_id || !type) {
-    throw new Error("Id parameter must be provided");
+    throw new Error("Something went wrong while getting vote count");
   }
 
   const voteCounts = await prisma.vote.groupBy({
@@ -97,16 +97,34 @@ export const getVoteCount = async (_id, type) => {
     },
   });
 
-  const resultObject = {
-    upvotes:
-      voteCounts.find(({ value }) => {
-        return value === 1;
-      })?._count.id || 0,
-    downvotes:
-      voteCounts.find(({ value }) => {
-        return value === -1;
-      })?._count.id || 0,
-  };
+  const upvotes =
+    voteCounts.find(({ value }) => {
+      return value === 1;
+    })?._count.id || 0;
+  const downvotes =
+    voteCounts.find(({ value }) => {
+      return value === -1;
+    })?._count.id || 0;
 
-  return resultObject.upvotes;
+  return upvotes - downvotes;
+};
+
+export const getSelfVoteValue = async (_id, userId, type) => {
+  if (!_id || !type || !userId) {
+    throw new Error("Something went wrong while getting self vote value");
+  }
+
+  const vote = await prisma.vote.findFirst({
+    where: {
+      questionId: type === "question" ? _id : undefined,
+      answerId: type === "answer" ? _id : undefined,
+      userId: userId,
+    },
+  });
+
+  if (!vote) {
+    return 0;
+  }
+
+  return vote.value && vote.userId === userId ? vote.value : 0;
 };

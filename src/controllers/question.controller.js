@@ -1,5 +1,9 @@
 import { prisma } from "../config/db/index.js";
-import { formatApiResponse } from "../utils/helper.js";
+import {
+  formatApiResponse,
+  getSelfVoteValue,
+  getVoteCount,
+} from "../utils/helper.js";
 class QuestionController {
   static async createQuestion(req, res, next) {
     try {
@@ -56,6 +60,7 @@ class QuestionController {
         ...newQuestion,
         upvoteCount: 0,
         downvoteCount: 0,
+        selfVote: 0,
       };
 
       return res
@@ -106,16 +111,21 @@ class QuestionController {
         },
       });
 
-      const formattedQuestions = questions.map((question) => {
-        let voteCount = question.votes.reduce((count, vote) => {
-          return count + vote.value;
-        }, 0);
+      const formattedQuestions = await Promise.all(
+        questions.map(async (question) => {
+          let voteCount = await getVoteCount(question.id, "question");
 
-        return {
-          ...question,
-          votes: voteCount,
-        };
-      });
+          return {
+            ...question,
+            votes: voteCount,
+            selfVote: await getSelfVoteValue(
+              question.id,
+              req.user.id,
+              "question",
+            ),
+          };
+        }),
+      );
 
       return res
         .status(200)
@@ -170,18 +180,9 @@ class QuestionController {
           .json(formatApiResponse(404, false, null, "Question not found"));
       }
 
-      const upvoteCount = question.votes.reduce((acc, vote) => {
-        return vote.value === 1 ? acc + 1 : acc;
-      }, 0);
-
-      const downvoteCount = question.votes.reduce((acc, vote) => {
-        return vote.value === -1 ? acc + 1 : acc;
-      }, 0);
-
       const formattedQuestion = {
         ...question,
-        upvoteCount,
-        downvoteCount,
+        votes: await getVoteCount(question.id, "question"),
       };
 
       return res

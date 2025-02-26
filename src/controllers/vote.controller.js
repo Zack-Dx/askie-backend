@@ -31,58 +31,56 @@ class VoteController {
       if (existingVote) {
         if (existingVote.value === value) {
           await prisma.vote.delete({ where: { id: existingVote.id } });
-
           return res
             .status(200)
             .json(
               formatApiResponse(
                 200,
                 true,
-                { votes: await getVoteCount(id, "question") },
-                `Vote removed successfully`,
+                { votes: await getVoteCount(id, "question"), selfVote: 0 },
+                "Vote removed successfully",
               ),
             );
-        }
+        } else {
+          await prisma.vote.update({
+            where: { id: existingVote.id },
+            data: { value },
+          });
 
-        await prisma.vote.update({
-          where: { id: existingVote.id },
-          data: { value },
-        });
-
-        return res
-          .status(200)
-          .json(
+          return res.status(200).json(
             formatApiResponse(
-              201,
+              200,
               true,
-              { votes: await getVoteCount(id, "question") },
-              `${value == 1 ? "Upvoted" : "Downvoted"} successfully`,
+              {
+                votes: await getVoteCount(id, "question"),
+                selfVote: value === 1 ? 1 : -1,
+              },
+              value === 1 ? "Upvoted" : "Downvoted",
             ),
           );
+        }
       }
 
       await prisma.vote.create({
-        data: {
-          value,
-          questionId: id,
-          userId,
-        },
+        data: { value, questionId: id, userId },
       });
 
-      return res
-        .status(200)
-        .json(
-          formatApiResponse(
-            201,
-            true,
-            { votes: await getVoteCount(id, "question") },
-            `${value == 1 ? "Upvoted" : "Downvoted"} successfully`,
-          ),
-        );
+      return res.status(201).json(
+        formatApiResponse(
+          201,
+          true,
+          {
+            votes: await getVoteCount(id, "question"),
+            selfVote: value === 1 ? 1 : -1,
+          },
+          value === 1 ? "Upvoted" : "Downvoted",
+        ),
+      );
     } catch (error) {
       next(error);
     }
   }
+
   //   static async voteAnswer(req, res, next) {
   //     try {
   //     } catch (error) {
