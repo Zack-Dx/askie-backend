@@ -1,5 +1,5 @@
 import { prisma } from "../config/db/index.js";
-import { formatApiResponse } from "../utils/helper.js";
+import { formatApiResponse, getVoteCount } from "../utils/helper.js";
 
 class VoteController {
   static async voteQuestion(req, res, next) {
@@ -38,7 +38,7 @@ class VoteController {
               formatApiResponse(
                 200,
                 true,
-                { value: -value },
+                { votes: await getVoteCount(id, "question") },
                 `Vote removed successfully`,
               ),
             );
@@ -55,7 +55,7 @@ class VoteController {
             formatApiResponse(
               201,
               true,
-              { value },
+              { votes: await getVoteCount(id, "question") },
               `${value == 1 ? "Upvoted" : "Downvoted"} successfully`,
             ),
           );
@@ -75,7 +75,7 @@ class VoteController {
           formatApiResponse(
             201,
             true,
-            { value },
+            { votes: await getVoteCount(id, "question") },
             `${value == 1 ? "Upvoted" : "Downvoted"} successfully`,
           ),
         );

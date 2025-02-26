@@ -3,6 +3,7 @@ import bcrypt from "bcrypt";
 import fs from "node:fs/promises";
 import mediaUploader from "../config/media/index.js";
 import { CONFIG } from "../config/env/index.js";
+import { prisma } from "../config/db/index.js";
 
 export function formatApiResponse(statusCode, status, data, message) {
   return {
@@ -78,4 +79,34 @@ export const uploadProfilePictureToCloud = async (path, user) => {
     public_id: `user_${user.id}`,
     overwrite: true,
   });
+};
+
+export const getVoteCount = async (_id, type) => {
+  if (!_id || !type) {
+    throw new Error("Id parameter must be provided");
+  }
+
+  const voteCounts = await prisma.vote.groupBy({
+    by: ["value"],
+    where: {
+      questionId: type === "question" ? _id : undefined,
+      answerId: type === "answer" ? _id : undefined,
+    },
+    _count: {
+      id: true,
+    },
+  });
+
+  const resultObject = {
+    upvotes:
+      voteCounts.find(({ value }) => {
+        return value === 1;
+      })?._count.id || 0,
+    downvotes:
+      voteCounts.find(({ value }) => {
+        return value === -1;
+      })?._count.id || 0,
+  };
+
+  return resultObject.upvotes;
 };
