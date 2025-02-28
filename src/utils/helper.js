@@ -81,6 +81,26 @@ export const uploadProfilePictureToCloud = async (path, user) => {
   });
 };
 
+export const uploadMediaToCloud = async (path, folder) => {
+  return await mediaUploader.uploader.upload(path, {
+    folder,
+  });
+};
+export const deleteMediaFromCloud = async (imageUrl, folder) => {
+  try {
+    if (!imageUrl) throw new Error("Image URL is required");
+    const publicId = imageUrl.split("/").pop().split(".")[0];
+
+    const result = await mediaUploader.uploader.destroy(
+      `${folder}/${publicId}`,
+    );
+    return result;
+  } catch (error) {
+    console.error("Error deleting media from Cloudinary:", error);
+    throw error;
+  }
+};
+
 export const getVoteCount = async (_id, type) => {
   if (!_id || !type) {
     throw new Error("Something went wrong while getting vote count");

@@ -3,6 +3,7 @@ import {
   formatApiResponse,
   getSelfVoteValue,
   getVoteCount,
+  uploadMediaToCloud,
 } from "../utils/helper.js";
 class QuestionController {
   static async createQuestion(req, res, next) {
@@ -310,6 +311,33 @@ class QuestionController {
       next(error);
     }
   }
+
+  static async uploadMediaToCloud(req, res, next) {
+    const file = req.file;
+
+    if (!file) {
+      return res
+        .status(400)
+        .json(formatApiResponse(400, false, null, "No file uploaded."));
+    }
+    try {
+      const uploadResult = await uploadMediaToCloud(file.path, "bugbee_media");
+      // Delete once uploaded
+      return res
+        .status(201)
+        .json(
+          formatApiResponse(
+            201,
+            true,
+            { url: uploadResult.secure_url },
+            "Upload Success",
+          ),
+        );
+    } catch (error) {
+      next(error);
+    }
+  }
+  static async deleteMediaFromCloud(req, res, next) {}
 }
 
 export { QuestionController };

@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { QuestionController } from "../controllers/question.controller.js";
 import { authenticateUser } from "../middlewares/auth.middleware.js";
+import { upload } from "../middlewares/multer.middleware.js";
 
 const questionRouter = Router();
 
@@ -9,6 +10,14 @@ questionRouter.get(
   authenticateUser,
   QuestionController.getAllQuestions,
 );
+
+questionRouter.post(
+  "/questions/media/upload",
+  authenticateUser,
+  upload.single("file"),
+  QuestionController.uploadMediaToCloud,
+);
+
 questionRouter.post(
   "/questions",
   authenticateUser,
