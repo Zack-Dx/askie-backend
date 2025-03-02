@@ -3,6 +3,7 @@ import {
   formatApiResponse,
   getSelfVoteValue,
   getVoteCount,
+  removeFileFromDisk,
   uploadMediaToCloud,
 } from "../utils/helper.js";
 class QuestionController {
@@ -322,7 +323,7 @@ class QuestionController {
     }
     try {
       const uploadResult = await uploadMediaToCloud(file.path, "bugbee_media");
-      // Delete once uploaded
+      await removeFileFromDisk(file.path);
       return res
         .status(201)
         .json(
