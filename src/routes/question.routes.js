@@ -17,6 +17,11 @@ questionRouter.post(
   upload.single("file"),
   QuestionController.uploadMediaToCloud,
 );
+questionRouter.post(
+  "/questions/media/delete",
+  authenticateUser,
+  QuestionController.deleteMediaFromCloud,
+);
 
 questionRouter.post(
   "/questions",
