@@ -172,6 +172,59 @@ class UserController {
       next(error);
     }
   }
+  static async newsLetter(req, res, next) {
+    try {
+      const { action } = req.body;
+      const userId = req.user.id;
+
+      const user = await prisma.user.findUnique({
+        where: { id: userId },
+        select: { isNewsSub: true },
+      });
+
+      if (!user) {
+        return res
+          .status(404)
+          .json(formatApiResponse(404, false, null, "User not found"));
+      }
+
+      if (action === -1) {
+        if (!user.isNewsSub) {
+          return res
+            .status(200)
+            .json(formatApiResponse(200, true, null, "Already Unsubscribed"));
+        }
+
+        await prisma.user.update({
+          where: { id: userId },
+          data: { isNewsSub: false },
+        });
+
+        return res
+          .status(200)
+          .json(
+            formatApiResponse(200, true, null, "Unsubscribed successfully"),
+          );
+      }
+
+      if (user.isNewsSub) {
+        return res
+          .status(200)
+          .json(formatApiResponse(200, true, null, "Already Subscribed"));
+      }
+
+      await prisma.user.update({
+        where: { id: userId },
+        data: { isNewsSub: true },
+      });
+
+      return res
+        .status(200)
+        .json(formatApiResponse(200, true, null, "Subscribed successfully"));
+    } catch (error) {
+      next(error);
+    }
+  }
 }
 
 export { UserController };

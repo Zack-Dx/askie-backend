@@ -17,5 +17,6 @@ userRouter.patch(
   upload.single("picture"),
   UserController.updateUserProfilePicture,
 );
+userRouter.post("/newsletter", authenticateUser, UserController.newsLetter);
 
 export { userRouter };
