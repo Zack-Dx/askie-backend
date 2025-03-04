@@ -33,6 +33,7 @@ model User {
   votes            Vote[]   
   createdAt        DateTime     @default(now())
   updatedAt        DateTime     @updatedAt
+  isNewsSub        Boolean      @default(false)
 }
 
 model Question {

@@ -34,6 +34,7 @@ class UserController {
               about: user.about,
               isPublic: user.isPublic,
               profession: user.profession,
+              isNewsSub: user.isNewsSub,
             },
             "User profile retrieved successfully",
           ),

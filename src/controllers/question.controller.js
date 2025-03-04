@@ -1,6 +1,7 @@
 import { prisma } from "../config/db/index.js";
 import {
   deleteMediaFromCloud as deleteMedia,
+  extractImageUrls,
   formatApiResponse,
   getSelfVoteValue,
   getVoteCount,
@@ -296,6 +297,14 @@ class QuestionController {
           );
       }
 
+      const urls = extractImageUrls(question.content);
+
+      await Promise.all(
+        urls.map((url) => {
+          deleteMedia(url, "bugbee_media");
+        }),
+      );
+
       await prisma.question.delete({
         where: { id },
       });
@@ -343,7 +352,7 @@ class QuestionController {
       return res
         .status(200)
         .json(
-          formatApiResponse(200, true, { message: "File deletion sucess" }),
+          formatApiResponse(200, true, { message: "File deletion success" }),
         );
     } catch (error) {
       next(error);
