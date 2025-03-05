@@ -139,12 +139,14 @@ export const getSelfVoteValue = async (_id, userId, type) => {
   return vote.value && vote.userId === userId ? vote.value : 0;
 };
 
-export const extractImageUrls = (markdown) => {
-  const regex = /!\[Uploaded Image]\((.*?)\)/g;
+export const extractImageUrls = (content) => {
+  const regex = /<img[^>]+src="([^">]+)"/g;
   let match;
   const urls = [];
-  while ((match = regex.exec(markdown)) !== null) {
+
+  while ((match = regex.exec(content)) !== null) {
     urls.push(match[1]);
   }
+
   return urls;
 };
