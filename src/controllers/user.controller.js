@@ -2,7 +2,7 @@ import {
   calculateAccountAgeInDays,
   formatApiResponse,
   removeFileFromDisk,
-  uploadProfilePictureToCloud,
+  uploadMediaToCloud,
 } from "../utils/helper.js";
 import mediaUploader from "../config/media/index.js";
 import { prisma } from "../config/db/index.js";
@@ -144,10 +144,11 @@ class UserController {
         await mediaUploader.uploader.destroy(`bugbee-users/${publicId}`);
       }
 
-      const uploadResult = await uploadProfilePictureToCloud(
-        picture.path,
-        user,
-      );
+      const uploadResult = await uploadMediaToCloud(picture.path, {
+        folder: "bugbee-users",
+        public_id: `user_${user.id}`,
+        overwrite: true,
+      });
 
       await removeFileFromDisk(picture.path);
 

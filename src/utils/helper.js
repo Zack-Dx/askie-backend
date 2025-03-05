@@ -73,18 +73,8 @@ export const removeFileFromDisk = async (path) => {
   }
 };
 
-export const uploadProfilePictureToCloud = async (path, user) => {
-  return await mediaUploader.uploader.upload(path, {
-    folder: "bugbee-users",
-    public_id: `user_${user.id}`,
-    overwrite: true,
-  });
-};
-
-export const uploadMediaToCloud = async (path, folder) => {
-  return await mediaUploader.uploader.upload(path, {
-    folder,
-  });
+export const uploadMediaToCloud = async (path, options) => {
+  return await mediaUploader.uploader.upload(path, options);
 };
 export const deleteMediaFromCloud = async (imageUrl, folder) => {
   try {

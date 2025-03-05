@@ -328,7 +328,9 @@ class QuestionController {
         .json(formatApiResponse(400, false, null, "No file uploaded."));
     }
     try {
-      const uploadResult = await uploadMediaToCloud(file.path, "bugbee_media");
+      const uploadResult = await uploadMediaToCloud(file.path, {
+        folder: "bugbee_media",
+      });
       await removeFileFromDisk(file.path);
       return res
         .status(201)
