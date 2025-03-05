@@ -34,6 +34,11 @@ model User {
   createdAt        DateTime     @default(now())
   updatedAt        DateTime     @updatedAt
   isNewsSub        Boolean      @default(false)
+    // New Subscription Fields
+  isPremium        Boolean      @default(false)
+  premiumStartDate DateTime?    
+  premiumEndDate   DateTime?    
+  subscriptionPlan String?     
 }
 
 model Question {
