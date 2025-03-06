@@ -301,7 +301,7 @@ class QuestionController {
 
       await Promise.all(
         urls.map((url) => {
-          deleteMedia(url, "bugbee_media");
+          deleteMedia(url, "askie_media");
         }),
       );
 
@@ -329,7 +329,7 @@ class QuestionController {
     }
     try {
       const uploadResult = await uploadMediaToCloud(file.path, {
-        folder: "bugbee_media",
+        folder: "askie_media",
       });
       await removeFileFromDisk(file.path);
       return res
@@ -350,7 +350,7 @@ class QuestionController {
     const imageUrl = req.body.imageUrl;
 
     try {
-      await deleteMedia(imageUrl, "bugbee_media");
+      await deleteMedia(imageUrl, "askie_media");
       return res
         .status(200)
         .json(

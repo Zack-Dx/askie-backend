@@ -1,7 +1,7 @@
 {
-  "name": "bugflow-backend",
+  "name": "askie-backend",
   "version": "1.0.0",
-  "description": "BugFlow Forum Backend",
+  "description": "Askie Backend",
   "main": "index.js",
   "type": "module",
   "scripts": {

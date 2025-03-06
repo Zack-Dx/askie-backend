@@ -145,11 +145,11 @@ class UserController {
 
       if (user.picture) {
         const publicId = user.picture.split("/").pop().split(".")[0];
-        await mediaUploader.uploader.destroy(`bugbee-users/${publicId}`);
+        await mediaUploader.uploader.destroy(`askie-users/${publicId}`);
       }
 
       const uploadResult = await uploadMediaToCloud(picture.path, {
-        folder: "bugbee-users",
+        folder: "askie_users",
         public_id: `user_${user.id}`,
         overwrite: true,
       });
