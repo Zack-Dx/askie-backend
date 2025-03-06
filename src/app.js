@@ -9,6 +9,7 @@ import { notificationRouter } from "./routes/notification.routes.js";
 import { initMediaCloud } from "./config/media/index.js";
 import { errorHandler } from "./middlewares/error.middleware.js";
 import { voteRouter } from "./routes/vote.routes.js";
+import { paymentRouter } from "./routes/payment.routes.js";
 
 const app = express();
 
@@ -37,6 +38,7 @@ app.use(`/api/${CONFIG.API_VERSION}`, userRouter);
 app.use(`/api/${CONFIG.API_VERSION}`, questionRouter);
 app.use(`/api/${CONFIG.API_VERSION}`, notificationRouter);
 app.use(`/api/${CONFIG.API_VERSION}`, voteRouter);
+app.use(`/api/${CONFIG.API_VERSION}/payment`, paymentRouter);
 
 // Handlers
 app.use(errorHandler);

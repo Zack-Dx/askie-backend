@@ -38,6 +38,7 @@ model User {
   premiumStartDate DateTime?    
   premiumEndDate   DateTime?    
   subscriptionPlan String?     
+  payments Payment[] 
 }
 
 model Question {
@@ -108,4 +109,19 @@ model Tag {
 enum Role {
   user
   admin
+}
+
+model Payment {
+  id          String   @id @default(uuid()) @unique
+  user        User     @relation(fields: [userId], references: [id])
+  userId      String
+  orderId     String   @unique
+  status      String
+  paymentId   String?   @unique
+  amount      Decimal  @db.Decimal()  
+  currency    String
+  receipt     String
+  notes       Json?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }
