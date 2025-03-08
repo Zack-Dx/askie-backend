@@ -146,7 +146,7 @@ class QuestionController {
     try {
       const { id } = req.params;
       const question = await prisma.question.findUnique({
-        where: { id: parseInt(id) },
+        where: { id },
         include: {
           tags: {
             select: {
@@ -183,6 +183,7 @@ class QuestionController {
       const formattedQuestion = {
         ...question,
         votes: await getVoteCount(question.id, "question"),
+        selfVote: await getSelfVoteValue(question.id, req.user.id, "question"),
       };
 
       return res

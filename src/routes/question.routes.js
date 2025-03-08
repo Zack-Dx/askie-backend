@@ -29,7 +29,11 @@ questionRouter.post(
   QuestionController.createQuestion,
 );
 
-questionRouter.get("/questions/:id", QuestionController.getSpecificQuestion);
+questionRouter.get(
+  "/questions/:id",
+  authenticateUser,
+  QuestionController.getSpecificQuestion,
+);
 
 questionRouter.patch(
   "/questions/:id",
