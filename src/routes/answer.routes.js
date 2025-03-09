@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { authenticateUser } from "../middlewares/auth.middleware";
+import { authenticateUser } from "../middlewares/auth.middleware.js";
 import { AnswerController } from "../controllers/answer.controller.js";
 
 const answerRouter = Router();
@@ -10,11 +10,11 @@ answerRouter.post(
   AnswerController.createAnswer,
 );
 
-answerRouter.get(
-  "/questions/:questionId/answers",
-  authenticateUser,
-  AnswerController.getAnswersForQuestion,
-);
+// answerRouter.get(
+//   "/questions/:questionId/answers",
+//   authenticateUser,
+//   AnswerController.getAnswersForQuestion,
+// );
 
 answerRouter.get(
   "/answers/:answerId",

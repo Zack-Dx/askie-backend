@@ -1,5 +1,5 @@
 import { prisma } from "../config/db/index.js";
-import { formatApiResponse } from "../utils/helper";
+import { formatApiResponse } from "../utils/helper.js";
 
 class AnswerController {
   static async createAnswer(req, res) {
@@ -9,7 +9,7 @@ class AnswerController {
 
     try {
       const question = await prisma.question.findUnique({
-        where: { id: Number(questionId) },
+        where: { id: questionId },
       });
 
       if (!question) {
@@ -21,7 +21,7 @@ class AnswerController {
       if (question.userId != userId) {
         await prisma.notification.create({
           data: {
-            message: `Your question "${question.title}" has received a new answer.`,
+            content: `Your question "${question.title}" has received a new answer.`,
             userId: question.userId,
             createdAt: new Date(),
           },
@@ -32,7 +32,7 @@ class AnswerController {
         data: {
           content,
           userId,
-          questionId: parseInt(questionId),
+          questionId: questionId,
         },
       });
       return res
