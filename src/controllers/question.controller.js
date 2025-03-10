@@ -170,7 +170,17 @@ class QuestionController {
               value: true,
             },
           },
-          answers: true,
+          answers: {
+            include: {
+              user: {
+                select: {
+                  name: true,
+                  picture: true,
+                  id: true,
+                },
+              },
+            },
+          },
         },
       });
 
