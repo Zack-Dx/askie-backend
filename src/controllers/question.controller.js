@@ -28,19 +28,20 @@ class QuestionController {
           );
       }
 
+      const generationConfig = {
+        temperature: 0.7,
+        topP: 0.95,
+        topK: 64,
+        maxOutputTokens: 200,
+      };
+
+      const model = genAI.getGenerativeModel({
+        model: "gemini-2.0-flash-lite-preview-02-05",
+      });
+
+      /* Dynamic Tag Gen*/
       let tags = [];
       try {
-        const model = genAI.getGenerativeModel({
-          model: "gemini-2.0-flash-lite-preview-02-05",
-        });
-
-        const generationConfig = {
-          temperature: 0.7,
-          topP: 0.95,
-          topK: 64,
-          maxOutputTokens: 200,
-        };
-
         const prompt = `You are an AI that generates up to 3 relevant programming-related tags for a given technical question.  
 
       ### Rules:  
@@ -87,10 +88,43 @@ class QuestionController {
         tags = [];
       }
 
+      let context = "";
+      /* Question Context Generation */
+      try {
+        const contextPrompt = `Generate a concise one-line summary for the given technical question.
+
+      ### Example:
+      **Question:**
+      Title: "How to optimize a Node.js stream for large file processing?"  
+      Content: "I'm working with Node.js streams to process a large file. However, I'm facing memory issues. How can I optimize it?"
+
+      **Output:**
+      "Optimizing Node.js streams for large file processing"
+
+      **Question:**
+      Title: "${title}"  
+      Content: "${content}"  
+
+      **Output:**`;
+
+        const contextSession = await model.startChat({
+          generationConfig,
+          history: [],
+        });
+
+        const contextResult = await contextSession.sendMessage(contextPrompt);
+        context = contextResult.response.text().trim();
+        context = context.replace(/^"(.*)"$/, "$1");
+      } catch (error) {
+        console.error("Failed to generate question context", error);
+        context = "";
+      }
+
       const newQuestion = await prisma.question.create({
         data: {
           title,
           content,
+          context,
           user: { connect: { id: userId } },
         },
         include: {
