@@ -35,10 +35,29 @@ class AnswerController {
           questionId: questionId,
         },
       });
+
+      const createdAnswer = await prisma.answer.findFirst({
+        where: { id: answer.id },
+        include: {
+          user: {
+            select: {
+              name: true,
+              picture: true,
+              id: true,
+            },
+          },
+        },
+      });
+
       return res
         .status(201)
         .json(
-          formatApiResponse(201, true, answer, "Answer created successfully"),
+          formatApiResponse(
+            201,
+            true,
+            { ...createdAnswer, votes: 0 },
+            "Answer created successfully",
+          ),
         );
     } catch (error) {
       console.error("Error creating answer:", error);

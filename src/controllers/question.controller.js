@@ -304,8 +304,16 @@ class QuestionController {
           .json(formatApiResponse(404, false, null, "Question not found"));
       }
 
+      const questionWithAnswersvote = await Promise.all(
+        question?.answers?.map(async (answer) => {
+          const voteCount = await getVoteCount(answer.id, "answer");
+          return { ...answer, votes: voteCount };
+        }),
+      );
+
       const formattedQuestion = {
         ...question,
+        answers: questionWithAnswersvote,
         votes: await getVoteCount(question.id, "question"),
         selfVote: await getSelfVoteValue(question.id, req.user.id, "question"),
       };
