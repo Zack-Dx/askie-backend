@@ -9,6 +9,10 @@ voteRouter.post(
   authenticateUser,
   VoteController.voteQuestion,
 );
-// voteRouter.post("/votes/answer/:id", VoteController.voteAnswer);
+voteRouter.post(
+  "/votes/answer/:id",
+  authenticateUser,
+  VoteController.voteAnswer,
+);
 
 export { voteRouter };

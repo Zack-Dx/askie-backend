@@ -80,13 +80,85 @@ class VoteController {
       next(error);
     }
   }
+  static async voteAnswer(req, res, next) {
+    const { id } = req.params;
+    const userId = req.user.id;
+    const { value } = req.body;
 
-  //   static async voteAnswer(req, res, next) {
-  //     try {
-  //     } catch (error) {
-  //       next(error);
-  //     }
-  //   }
+    if (![1, -1].includes(value)) {
+      return res
+        .status(400)
+        .json(
+          formatApiResponse(400, false, "Invalid vote value. Use 1 or -1."),
+        );
+    }
+
+    try {
+      const answer = await prisma.answer.findFirst({ where: { id } });
+
+      if (!answer) {
+        return res
+          .status(404)
+          .json(formatApiResponse(404, false, null, "Answer not found"));
+      }
+
+      const existingVote = await prisma.vote.findFirst({
+        where: { userId, answerId: id },
+      });
+
+      if (existingVote) {
+        if (existingVote.value === value) {
+          await prisma.vote.delete({ where: { id: existingVote.id } });
+          return res.status(200).json(
+            formatApiResponse(
+              200,
+              true,
+              {
+                votes: await getVoteCount(id, "answer"),
+                selfVote: 0,
+              },
+              "Vote removed successfully",
+            ),
+          );
+        } else {
+          await prisma.vote.update({
+            where: { id: existingVote.id },
+            data: { value },
+          });
+
+          return res.status(200).json(
+            formatApiResponse(
+              200,
+              true,
+              {
+                votes: await getVoteCount(id, "answer"),
+                selfVote: value === 1 ? 1 : -1,
+              },
+              value === 1 ? "Upvoted" : "Downvoted",
+            ),
+          );
+        }
+      }
+
+      await prisma.vote.create({
+        data: { value, answerId: id, userId },
+      });
+
+      return res.status(201).json(
+        formatApiResponse(
+          201,
+          true,
+          {
+            votes: await getVoteCount(id, "answer"),
+            selfVote: value === 1 ? 1 : -1,
+          },
+          value === 1 ? "Upvoted" : "Downvoted",
+        ),
+      );
+    } catch (error) {
+      next(error);
+    }
+  }
 }
 
 export { VoteController };

@@ -254,6 +254,7 @@ class QuestionController {
   }
 
   static async getSpecificQuestion(req, res, next) {
+    const userId = req.user.id;
     try {
       const { id } = req.params;
       const question = await prisma.question.findUnique({
@@ -307,7 +308,8 @@ class QuestionController {
       const questionWithAnswersvote = await Promise.all(
         question?.answers?.map(async (answer) => {
           const voteCount = await getVoteCount(answer.id, "answer");
-          return { ...answer, votes: voteCount };
+          const self = await getSelfVoteValue(answer.id, userId, "answer");
+          return { ...answer, votes: voteCount, selfVote: self };
         }),
       );
 

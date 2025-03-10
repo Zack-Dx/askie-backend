@@ -55,7 +55,7 @@ class AnswerController {
           formatApiResponse(
             201,
             true,
-            { ...createdAnswer, votes: 0 },
+            { ...createdAnswer, votes: 0, selfVote: 0 },
             "Answer created successfully",
           ),
         );
