@@ -25,6 +25,7 @@
   "author": "Harshit",
   "license": "ISC",
   "dependencies": {
+    "@google/generative-ai": "^0.24.0",
     "@prisma/client": "^5.20.0",
     "bcrypt": "^5.1.1",
     "cloudinary": "^2.5.1",

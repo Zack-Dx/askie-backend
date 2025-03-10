@@ -19,6 +19,7 @@ const {
   PREMIUM_YEARLY_PRICE,
   CLIENT_URL,
   PAYMENT_WEBHOOK_SECRET,
+  AI_KEY,
 } = process.env;
 
 export const CONFIG = {
@@ -39,4 +40,5 @@ export const CONFIG = {
   PREMIUM_YEARLY_PRICE,
   CLIENT_URL,
   PAYMENT_WEBHOOK_SECRET,
+  AI_KEY,
 };

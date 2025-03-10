@@ -1,3 +1,4 @@
+import { genAI } from "../config/ai/index.js";
 import { prisma } from "../config/db/index.js";
 import {
   deleteMediaFromCloud as deleteMedia,
@@ -27,6 +28,65 @@ class QuestionController {
           );
       }
 
+      let tags = [];
+      try {
+        const model = genAI.getGenerativeModel({
+          model: "gemini-2.0-flash-lite-preview-02-05",
+        });
+
+        const generationConfig = {
+          temperature: 0.7,
+          topP: 0.95,
+          topK: 64,
+          maxOutputTokens: 200,
+        };
+
+        const prompt = `You are an AI that generates up to 3 relevant programming-related tags for a given technical question.  
+
+      ### Rules:  
+      - Only return tags related to programming, frameworks, or libraries (e.g., JavaScript, Node.js, React, Python, Docker, etc.).  
+      - If the question is unrelated to programming, return an empty array "[]".  
+      - Do NOT include general or vague tags like "help," "question," or "issue."  
+      - The output format must be valid JSON, containing only an array of tag names.  
+
+      ### Example Output:
+      ["Node.js", "Streams", "Memory Management"]
+
+      ### Question:
+      Title: "${title}"  
+      Content: "${content}"  
+
+      Only return the JSON array with tag names and nothing else.`;
+
+        const chatSession = await model.startChat({
+          generationConfig,
+          history: [],
+        });
+
+        const result = await chatSession.sendMessage(prompt);
+        let responseText = result.response.text().trim();
+
+        // JSON Formatting
+        try {
+          responseText = responseText.replace(/^```json|```$/g, "").trim();
+          tags = JSON.parse(responseText);
+
+          if (!Array.isArray(tags)) throw new Error("Invalid JSON format");
+
+          tags = tags.slice(0, 3).map((tag) => {
+            return tag.toLowerCase().replace(/\b\w/g, (char) => {
+              return char.toUpperCase();
+            });
+          });
+        } catch (error) {
+          console.error("Error parsing AI-generated tags:", error);
+          tags = [];
+        }
+      } catch (error) {
+        console.error("Error generating tags:", error);
+        tags = [];
+      }
+
       const newQuestion = await prisma.question.create({
         data: {
           title,
@@ -54,6 +114,23 @@ class QuestionController {
           answers: true,
         },
       });
+
+      if (tags.length !== 0) {
+        for (const tagName of tags) {
+          let tag = await prisma.tag.upsert({
+            where: { name: tagName },
+            update: {},
+            create: { name: tagName },
+          });
+
+          await prisma.questionTag.create({
+            data: {
+              questionId: newQuestion.id,
+              tagId: tag.id,
+            },
+          });
+        }
+      }
 
       const formattedQuestion = {
         ...newQuestion,
@@ -88,9 +165,9 @@ class QuestionController {
               tag: {
                 select: {
                   name: true,
+                  id: true,
                 },
               },
-              tagId: true,
             },
           },
           user: {
@@ -153,9 +230,9 @@ class QuestionController {
               tag: {
                 select: {
                   name: true,
+                  id: true,
                 },
               },
-              tagId: true,
             },
           },
           user: {
@@ -171,6 +248,9 @@ class QuestionController {
             },
           },
           answers: {
+            orderBy: {
+              createdAt: "desc",
+            },
             include: {
               user: {
                 select: {
@@ -315,6 +395,10 @@ class QuestionController {
           deleteMedia(url, "askie_media");
         }),
       );
+
+      await prisma.questionTag.deleteMany({
+        where: { questionId: id },
+      });
 
       await prisma.question.delete({
         where: { id },
