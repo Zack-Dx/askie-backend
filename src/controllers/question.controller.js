@@ -440,6 +440,10 @@ class QuestionController {
         }),
       );
 
+      await prisma.answer.deleteMany({
+        where: { questionId: id },
+      });
+
       await prisma.questionTag.deleteMany({
         where: { questionId: id },
       });
