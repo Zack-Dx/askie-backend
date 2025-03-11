@@ -22,7 +22,7 @@ answerRouter.get(
   AnswerController.getAnswer,
 );
 
-answerRouter.put(
+answerRouter.patch(
   "/answers/:answerId",
   authenticateUser,
   AnswerController.updateAnswer,

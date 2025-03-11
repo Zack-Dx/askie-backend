@@ -115,7 +115,7 @@ class AnswerController {
     const userId = req.user.id;
     try {
       const answer = await prisma.answer.findUnique({
-        where: { id: Number(answerId) },
+        where: { id: answerId },
       });
 
       if (!answer) {
@@ -138,7 +138,7 @@ class AnswerController {
       }
 
       const updatedAnswer = await prisma.answer.update({
-        where: { id: Number(answerId) },
+        where: { id: answerId },
         data: { content },
       });
 
@@ -164,7 +164,7 @@ class AnswerController {
     const userId = req.user.id;
     try {
       const answer = await prisma.answer.findUnique({
-        where: { id: Number(answerId) },
+        where: { id: answerId },
       });
 
       if (!answer) {
@@ -186,7 +186,7 @@ class AnswerController {
       }
 
       await prisma.answer.delete({
-        where: { id: Number(answerId) },
+        where: { id: answerId },
       });
 
       return res
