@@ -5,6 +5,7 @@ class AnswerController {
   static async createAnswer(req, res) {
     const { questionId } = req.params;
     const { content } = req.body;
+    const username = req.user.name;
     const userId = req.user.id;
 
     try {
@@ -16,16 +17,6 @@ class AnswerController {
         return res
           .status(404)
           .json(formatApiResponse(404, false, null, "Question not found"));
-      }
-
-      if (question.userId != userId) {
-        await prisma.notification.create({
-          data: {
-            content: `Your question "${question.title}" has received a new answer.`,
-            userId: question.userId,
-            createdAt: new Date(),
-          },
-        });
       }
 
       const answer = await prisma.answer.create({
@@ -46,6 +37,14 @@ class AnswerController {
               id: true,
             },
           },
+        },
+      });
+
+      await prisma.notification.create({
+        data: {
+          userId: question.userId,
+          content: `${username} replied to your question ${question.title}`,
+          href: `/view/question/${question.id}`,
         },
       });
 

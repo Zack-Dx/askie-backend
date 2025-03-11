@@ -16,4 +16,10 @@ notificationRouter.post(
   NotificationController.markAllNotificationsAsRead,
 );
 
+notificationRouter.post(
+  "/notifications/read/:id",
+  authenticateUser,
+  NotificationController.markNotificationAsRead,
+);
+
 export { notificationRouter };
