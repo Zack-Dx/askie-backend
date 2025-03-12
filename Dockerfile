@@ -1,17 +1,16 @@
 FROM node:alpine3.21
 
-# Install required dependencies (including OpenSSL)
+# Install required dependencies (including OpenSSL for Prisma to Connect)
 RUN apk add --no-cache openssl
 
 WORKDIR /app
 
 COPY package.json package-lock.json ./
-RUN npm install
 
+RUN npm install
 
 COPY . .
 
-# Generate Prisma client before starting the app
 RUN npx prisma generate
 
 EXPOSE 7777
