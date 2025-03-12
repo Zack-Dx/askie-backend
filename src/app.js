@@ -24,7 +24,7 @@ app.get("/health", (req, res) => {
 
 app.use(
   cors({
-    origin: "http://localhost:3000",
+    origin: CONFIG.CLIENT_URL,
     credentials: true,
   }),
 );
