@@ -1,7 +1,7 @@
 FROM node:alpine3.21
 
 # Install required dependencies (including OpenSSL)
-RUN apk add --no-cache openssl1.1-compat
+RUN apk add --no-cache openssl
 
 WORKDIR /app
 
