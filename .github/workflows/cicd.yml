@@ -34,8 +34,8 @@ jobs:
       - name: Run Docker Container
         run: |
           docker run -d -p 7777:7777 --name nodejs-app-container \
-            -e NODE_ENV=development \
-            -e PORT=7777 \
+            -e NODE_ENV=${{ secrets.NODE_ENV }} \
+            -e PORT=${{ secrets.PORT }} \
             -e DATABASE_URL=${{ secrets.DATABASE_URL }} \
             -e CLIENT_URL=${{ secrets.CLIENT_URL }} \
             -e API_VERSION=${{ secrets.API_VERSION }} \
