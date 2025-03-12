@@ -22,4 +22,10 @@ notificationRouter.post(
   NotificationController.markNotificationAsRead,
 );
 
+notificationRouter.delete(
+  "/notifications/clear",
+  authenticateUser,
+  NotificationController.clearAllNotifications,
+);
+
 export { notificationRouter };

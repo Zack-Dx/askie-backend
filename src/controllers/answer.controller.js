@@ -45,6 +45,7 @@ class AnswerController {
           userId: question.userId,
           content: `${username} replied to your question ${question.title}`,
           href: `/view/question/${question.id}`,
+          answerId: answer.id,
         },
       });
 

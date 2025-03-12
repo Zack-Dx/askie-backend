@@ -65,6 +65,7 @@ model Answer {
   votes       Vote[]      
   createdAt   DateTime     @default(now())
   updatedAt   DateTime     @updatedAt
+  Notification Notification[]
 }
 
 model Vote {
@@ -90,6 +91,8 @@ model Notification {
   href      String     @default("") 
   read      Boolean    @default(false) 
   createdAt DateTime   @default(now())
+  answerId    String?
+  answer      Answer?    @relation(fields: [answerId], references: [id])
 }
 
 model QuestionTag {

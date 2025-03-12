@@ -102,6 +102,28 @@ class NotificationController {
       next(error);
     }
   }
+  static async clearAllNotifications(req, res, next) {
+    const userId = req.user.id;
+    try {
+      await prisma.notification.deleteMany({
+        where: {
+          userId,
+        },
+      });
+      return res
+        .status(200)
+        .json(
+          formatApiResponse(
+            200,
+            true,
+            null,
+            "Notifications cleared successfully.",
+          ),
+        );
+    } catch (error) {
+      next(error);
+    }
+  }
 }
 
 export { NotificationController };
