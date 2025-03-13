@@ -74,7 +74,6 @@ class PaymentController {
     }
   }
   static async handleWebhook(req, res, next) {
-    console.log("webhook called");
     const webhookBody = req.body;
     const webhookSignature = req.get("X-Razorpay-Signature");
 
@@ -96,6 +95,8 @@ class PaymentController {
       const { event, payload } = webhookBody;
 
       const paymentDetails = payload.payment.entity;
+
+      console.log(payload.payment);
 
       const payment = await prisma.payment.findUnique({
         where: {
