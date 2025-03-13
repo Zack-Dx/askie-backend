@@ -28,16 +28,20 @@ jobs:
       - name: Pull Image from Docker Hub
         run: docker pull harshit1609/askie_backend:latest
 
+      - name: Create Docker Network (if not exists)
+        run: docker network create askie_network || true
+
       - name: Remove Existing Container (if exists)
         run: docker rm -f nodejs-app-container || true
 
       - name: Run Docker Container
         run: |
           docker run -d -p 7777:7777 --name nodejs-app-container \
+            --network askie_network \ 
             -e NODE_ENV=${{ secrets.NODE_ENV }} \
             -e PORT=${{ secrets.PORT }} \
             -e DATABASE_URL=${{ secrets.DATABASE_URL }} \
-            -e CLIENT_URL=${{ secrets.CLIENT_URL }} \
+            -e CLIENT_URL=http://domain.com \  # Use domain instead of localhost
             -e API_VERSION=${{ secrets.API_VERSION }} \
             -e GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }} \
             -e GOOGLE_CLIENT_SECRET=${{ secrets.GOOGLE_CLIENT_SECRET }} \
