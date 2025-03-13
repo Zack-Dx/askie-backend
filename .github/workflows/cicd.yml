@@ -41,7 +41,7 @@ jobs:
             -e NODE_ENV=${{ secrets.NODE_ENV }} \
             -e PORT=${{ secrets.PORT }} \
             -e DATABASE_URL=${{ secrets.DATABASE_URL }} \
-            -e CLIENT_URL=http://domain.com \  # Use domain instead of localhost
+            -e CLIENT_URL=${{secrets.CLIENT_URL}} \  # Use domain instead of localhost
             -e API_VERSION=${{ secrets.API_VERSION }} \
             -e GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }} \
             -e GOOGLE_CLIENT_SECRET=${{ secrets.GOOGLE_CLIENT_SECRET }} \
