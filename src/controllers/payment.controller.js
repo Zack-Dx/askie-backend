@@ -75,7 +75,7 @@ class PaymentController {
   }
   static async handleWebhook(req, res, next) {
     const webhookBody = req.body;
-    const webhookSignature = req.get["X-Razorpay-Signature"];
+    const webhookSignature = req.get("X-Razorpay-Signature");
 
     try {
       const isValid = validateWebhookSignature(
