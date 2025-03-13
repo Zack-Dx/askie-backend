@@ -37,7 +37,7 @@ jobs:
       - name: Run Docker Container
         run: |
           docker run -d -p 7777:7777 --name nodejs-app-container \
-            --network askie_network \ 
+            --network askie_network \
             -e NODE_ENV=${{ secrets.NODE_ENV }} \
             -e PORT=${{ secrets.PORT }} \
             -e DATABASE_URL=${{ secrets.DATABASE_URL }} \
