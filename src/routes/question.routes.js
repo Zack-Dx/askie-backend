@@ -5,11 +5,7 @@ import { upload } from "../middlewares/multer.middleware.js";
 
 const questionRouter = Router();
 
-questionRouter.get(
-  "/questions",
-  authenticateUser,
-  QuestionController.getAllQuestions,
-);
+questionRouter.get("/questions", QuestionController.getAllQuestions);
 
 questionRouter.post(
   "/questions/media/upload",
