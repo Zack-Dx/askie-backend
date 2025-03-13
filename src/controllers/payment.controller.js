@@ -96,8 +96,6 @@ class PaymentController {
 
       const paymentDetails = payload.payment.entity;
 
-      console.log(payload.payment);
-
       const payment = await prisma.payment.findUnique({
         where: {
           orderId: paymentDetails.order_id,
