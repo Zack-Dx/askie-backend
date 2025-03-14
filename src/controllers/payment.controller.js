@@ -178,7 +178,7 @@ class PaymentController {
   static async verifyPremiumUser(req, res) {
     const user = req.user;
 
-    if (user.premium) {
+    if (user.isPremium) {
       return res
         .status(200)
         .json(
