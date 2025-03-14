@@ -164,11 +164,6 @@ class PaymentController {
             subscriptionPlan: membershipType,
           },
         });
-
-        req.user.isPremium = true;
-        req.user.premiumStartDate = premiumStartDate;
-        req.user.premiumEndDate = premiumEndDate;
-        req.user.subscriptionPlan = membershipType;
       }
 
       return res
