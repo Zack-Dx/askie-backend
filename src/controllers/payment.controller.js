@@ -164,6 +164,8 @@ class PaymentController {
             subscriptionPlan: membershipType,
           },
         });
+
+        req.user.isPremium = true;
       }
 
       return res
