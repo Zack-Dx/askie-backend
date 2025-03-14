@@ -6,5 +6,10 @@ const paymentRouter = Router();
 
 paymentRouter.post("/create", authenticateUser, PaymentController.createOrder);
 paymentRouter.post("/webhook", PaymentController.handleWebhook);
+paymentRouter.get(
+  "/premium/verify",
+  authenticateUser,
+  PaymentController.verifyPremiumUser,
+);
 
 export { paymentRouter };

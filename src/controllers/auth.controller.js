@@ -62,31 +62,16 @@ class AuthController {
         sameSite: CONFIG.NODE_ENV === "production" ? "none" : "lax",
       });
 
-      return res.status(200).json(
-        formatApiResponse(
-          200,
-          true,
-          {
-            id: user.id,
-            email: user.email,
-            name: user.name,
-            picture: user.picture,
-            role: user.role,
-            linkedinUrl: user.linkedinUrl,
-            githubUrl: user.githubUrl,
-            portfolioUrl: user.portfolioUrl,
-            twitterUrl: user.twitterUrl,
-            questionsAsked: user.questionsAsked,
-            answersProvided: user.answersProvided,
-            accountAge: calculateAccountAgeInDays(user.createdAt),
-            location: user.location,
-            about: user.about,
-            isPublic: user.isPublic,
-            profession: user.profession,
-          },
-          "Login Successful",
-        ),
-      );
+      return res
+        .status(200)
+        .json(
+          formatApiResponse(
+            200,
+            true,
+            { ...user, accountAge: calculateAccountAgeInDays(user.createdAt) },
+            "Login Successful",
+          ),
+        );
     } catch (error) {
       next(error);
     }
@@ -143,31 +128,16 @@ class AuthController {
         sameSite: CONFIG.NODE_ENV === "production" ? "none" : "lax",
       });
 
-      return res.status(200).json(
-        formatApiResponse(
-          200,
-          true,
-          {
-            id: user.id,
-            email: user.email,
-            name: user.name,
-            picture: user.picture,
-            role: user.role,
-            linkedinUrl: user.linkedinUrl,
-            githubUrl: user.githubUrl,
-            portfolioUrl: user.portfolioUrl,
-            twitterUrl: user.twitterUrl,
-            questionsAsked: user.questionsAsked,
-            answersProvided: user.answersProvided,
-            accountAge: calculateAccountAgeInDays(user.createdAt),
-            location: user.location,
-            about: user.about,
-            isPublic: user.isPublic,
-            profession: user.profession,
-          },
-          "Login Successful",
-        ),
-      );
+      return res
+        .status(200)
+        .json(
+          formatApiResponse(
+            200,
+            true,
+            { ...user, accountAge: calculateAccountAgeInDays(user.createdAt) },
+            "Login Successful",
+          ),
+        );
     } catch (error) {
       next(error);
     }
@@ -258,31 +228,16 @@ class AuthController {
         sameSite: CONFIG.NODE_ENV === "production" ? "none" : "lax",
       });
 
-      return res.status(200).json(
-        formatApiResponse(
-          200,
-          true,
-          {
-            id: user.id,
-            email: user.email,
-            name: user.name,
-            picture: user.picture,
-            role: user.role,
-            linkedinUrl: user.linkedinUrl,
-            githubUrl: user.githubUrl,
-            portfolioUrl: user.portfolioUrl,
-            twitterUrl: user.twitterUrl,
-            questionsAsked: user.questionsAsked,
-            answersProvided: user.answersProvided,
-            accountAge: calculateAccountAgeInDays(user.createdAt),
-            location: user.location,
-            about: user.about,
-            isPublic: user.isPublic,
-            profession: user.profession,
-          },
-          "Login Successful",
-        ),
-      );
+      return res
+        .status(200)
+        .json(
+          formatApiResponse(
+            200,
+            true,
+            { ...user, accountAge: calculateAccountAgeInDays(user.createdAt) },
+            "Login Successful",
+          ),
+        );
     } catch (error) {
       next(error);
     }

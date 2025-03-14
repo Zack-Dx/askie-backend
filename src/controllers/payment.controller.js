@@ -175,6 +175,33 @@ class PaymentController {
       next(error);
     }
   }
+  static async verifyPremiumUser(req, res) {
+    const user = req.user;
+
+    if (user.premium) {
+      return res
+        .status(200)
+        .json(
+          formatApiResponse(
+            200,
+            true,
+            { isPremium: true },
+            "User has premium access.",
+          ),
+        );
+    }
+
+    return res
+      .status(403)
+      .json(
+        formatApiResponse(
+          403,
+          false,
+          { isPremium: false },
+          "Access denied. User is not a premium member.",
+        ),
+      );
+  }
 }
 
 export { PaymentController };
