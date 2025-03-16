@@ -1,4 +1,5 @@
 import { prisma } from "../config/db/index.js";
+import { getIo } from "../config/socket/index.js";
 import { formatApiResponse } from "../utils/helper.js";
 
 class AnswerController {
@@ -40,7 +41,7 @@ class AnswerController {
         },
       });
 
-      await prisma.notification.create({
+      const notification = await prisma.notification.create({
         data: {
           userId: question.userId,
           content: `${username} replied to your question ${question.title}`,
@@ -48,6 +49,11 @@ class AnswerController {
           answerId: answer.id,
         },
       });
+
+      const io = getIo();
+      if (io) {
+        io.to(`user-${question.userId}`).emit("new_notification", notification);
+      }
 
       return res
         .status(201)

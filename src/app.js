@@ -11,6 +11,8 @@ import { errorHandler } from "./middlewares/error.middleware.js";
 import { voteRouter } from "./routes/vote.routes.js";
 import { paymentRouter } from "./routes/payment.routes.js";
 import { answerRouter } from "./routes/answer.routes.js";
+import http from "node:http";
+import { initSocket } from "./config/socket/index.js";
 
 const app = express();
 
@@ -48,4 +50,9 @@ app.use((_, res) => {
   return res.status(404).json({ message: "Route not found." });
 });
 
-export { app };
+const server = http.createServer(app);
+
+// Socket Initializer
+initSocket(server);
+
+export { server };
