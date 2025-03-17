@@ -13,7 +13,6 @@ export const initSocket = (server) => {
   io.on("connection", (socket) => {
     socket.on("join_room", (room) => {
       socket.join(room);
-      //   console.log(`User joined room: ${room}`);
     });
 
     socket.on("disconnect", () => {
