@@ -2,6 +2,7 @@ import { Router } from "express";
 import { QuestionController } from "../controllers/question.controller.js";
 import { authenticateUser } from "../middlewares/auth.middleware.js";
 import { upload } from "../middlewares/multer.middleware.js";
+import { checkUserPremium } from "../middlewares/premium.middleware.js";
 
 const questionRouter = Router();
 
@@ -9,6 +10,13 @@ questionRouter.get(
   "/questions",
   authenticateUser,
   QuestionController.getAllQuestions,
+);
+
+questionRouter.get(
+  "/questions/summary/:id",
+  authenticateUser,
+  checkUserPremium,
+  QuestionController.getSummary,
 );
 
 questionRouter.post(

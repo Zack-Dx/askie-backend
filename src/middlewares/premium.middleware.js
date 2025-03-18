@@ -1,4 +1,4 @@
-import { formatApiResponse } from "../utils/helper";
+import { formatApiResponse } from "../utils/helper.js";
 
 export const checkUserPremium = (req, res, next) => {
   const user = req.user;

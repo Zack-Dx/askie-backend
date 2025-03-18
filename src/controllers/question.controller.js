@@ -503,6 +503,81 @@ class QuestionController {
       next(error);
     }
   }
+  static async getSummary(req, res, next) {
+    try {
+      const { id } = req.params;
+
+      const question = await prisma.question.findUnique({
+        where: { id },
+        select: { content: true, title: true },
+      });
+
+      if (!question) {
+        return res
+          .status(404)
+          .json(formatApiResponse(404, false, null, "Question not found"));
+      }
+
+      const { content, title } = question;
+
+      const generationConfig = {
+        temperature: 0.7,
+        topP: 0.95,
+        topK: 64,
+        maxOutputTokens: 300,
+      };
+
+      const model = genAI.getGenerativeModel({
+        model: "gemini-2.0-flash-lite-preview-02-05",
+      });
+
+      const prompt = `
+      You are an AI that generates a **concise and descriptive 2-3 line summary** for a technical question. 
+      
+      ### Rules:
+      - Summarize the **main problem or query** clearly.
+      - Use 2-3 complete sentences to describe the core issue.
+      - Avoid fluff, but include the key technical details.
+
+      ### Example:
+      **Question:** 
+      Title: "How to optimize Node.js streams for large file processing?"  
+      Content: "I'm working with Node.js streams to process large CSV files. I'm facing memory issues when handling big files. What are the best practices for optimization?"
+      
+      **Output:**
+      "The user is facing memory issues while processing large CSV files with Node.js streams. They are seeking best practices to optimize stream performance and avoid memory bottlenecks."
+
+      **Question:**
+      Title: "${title}"  
+      Content: "${content}"  
+
+      **Output:**
+    `;
+
+      const chatSession = await model.startChat({
+        generationConfig,
+        history: [],
+      });
+
+      const result = await chatSession.sendMessage(prompt);
+      let summary = result.response.text().trim();
+
+      summary = summary.replace(/^"(.*)"$/, "$1");
+
+      return res
+        .status(200)
+        .json(
+          formatApiResponse(
+            200,
+            true,
+            { summary },
+            "Summary generated successfully",
+          ),
+        );
+    } catch (error) {
+      next(error);
+    }
+  }
 }
 
 export { QuestionController };
