@@ -49,6 +49,12 @@ questionRouter.patch(
   QuestionController.updateQuestion,
 );
 
+questionRouter.get(
+  "/questions/suggestions/search",
+  authenticateUser,
+  QuestionController.getQuestionSuggestions,
+);
+
 questionRouter.delete(
   "/questions/:id",
   authenticateUser,

@@ -578,6 +578,80 @@ class QuestionController {
       next(error);
     }
   }
+  static async getQuestionSuggestions(req, res, next) {
+    const { keyword } = req.query;
+
+    try {
+      if (!keyword || keyword.trim().length < 2) {
+        return res
+          .status(400)
+          .json(
+            formatApiResponse(400, false, null, "Enter at least 2 characters."),
+          );
+      }
+
+      const suggestions = await prisma.question.findMany({
+        where: {
+          OR: [
+            {
+              title: {
+                startsWith: keyword,
+                mode: "insensitive",
+              },
+            },
+            {
+              context: {
+                contains: keyword,
+                mode: "insensitive",
+              },
+            },
+          ],
+        },
+        select: {
+          id: true,
+          title: true,
+          context: true,
+          createdAt: true,
+        },
+        orderBy: {
+          createdAt: "desc",
+        },
+        take: 5,
+      });
+
+      if (suggestions.length === 0) {
+        return res
+          .status(200)
+          .json(
+            formatApiResponse(200, true, [], "No matching questions found."),
+          );
+      }
+
+      const trimmedSuggestions = suggestions.map((q) => {
+        return {
+          id: q.id,
+          title: q.title,
+          trimmedTitle:
+            q.title.length > 40 ? `${q.title.substring(0, 40)}...` : q.title,
+          context: q.context,
+          createdAt: q.createdAt,
+        };
+      });
+
+      return res
+        .status(200)
+        .json(
+          formatApiResponse(
+            200,
+            true,
+            trimmedSuggestions,
+            "Suggestions retrieved successfully.",
+          ),
+        );
+    } catch (error) {
+      next(error);
+    }
+  }
 }
 
 export { QuestionController };
