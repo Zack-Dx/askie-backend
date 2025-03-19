@@ -582,12 +582,10 @@ class QuestionController {
     const { keyword } = req.query;
 
     try {
-      if (!keyword || keyword.trim().length < 2) {
+      if (!keyword) {
         return res
           .status(400)
-          .json(
-            formatApiResponse(400, false, null, "Enter at least 2 characters."),
-          );
+          .json(formatApiResponse(400, false, null, "Keyword is required."));
       }
 
       const suggestions = await prisma.question.findMany({
