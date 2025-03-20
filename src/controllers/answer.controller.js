@@ -3,7 +3,7 @@ import { getIo } from "../config/socket/index.js";
 import { formatApiResponse } from "../utils/helper.js";
 
 class AnswerController {
-  static async createAnswer(req, res) {
+  static async createAnswer(req, res, next) {
     const { questionId } = req.params;
     const { content } = req.body;
     const username = req.user.name;
@@ -66,13 +66,10 @@ class AnswerController {
           ),
         );
     } catch (error) {
-      console.error("Error creating answer:", error);
-      return res
-        .status(500)
-        .json(formatApiResponse(500, false, null, "Internal Server Error"));
+      next(error);
     }
   }
-  static async getAnswer(req, res) {
+  static async getAnswer(req, res, next) {
     const { questionId } = req.params;
     try {
       const question = await prisma.question.findUnique({
@@ -109,13 +106,10 @@ class AnswerController {
           ),
         );
     } catch (error) {
-      console.error("Error fetching answers:", error);
-      return res
-        .status(500)
-        .json(formatApiResponse(500, false, null, "Internal Server Error"));
+      next(error);
     }
   }
-  static async updateAnswer(req, res) {
+  static async updateAnswer(req, res, next) {
     const { answerId } = req.params;
     const { content } = req.body;
     const userId = req.user.id;
@@ -159,13 +153,10 @@ class AnswerController {
           ),
         );
     } catch (error) {
-      console.error("Error updating answer:", error);
-      return res
-        .status(500)
-        .json(formatApiResponse(500, false, null, "Internal Server Error"));
+      next(error);
     }
   }
-  static async deleteAnswer(req, res) {
+  static async deleteAnswer(req, res, next) {
     const { answerId } = req.params;
     const userId = req.user.id;
     try {
@@ -201,10 +192,14 @@ class AnswerController {
           formatApiResponse(200, true, null, "Answer deleted successfully"),
         );
     } catch (error) {
-      console.error("Error deleting answer:", error);
-      return res
-        .status(500)
-        .json(formatApiResponse(500, false, null, "Internal Server Error"));
+      next(error);
+    }
+  }
+  static async askieAnswer(req, res, next) {
+    try {
+      // Quota Based
+    } catch (error) {
+      next(error);
     }
   }
 }
