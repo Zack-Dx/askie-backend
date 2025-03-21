@@ -34,4 +34,10 @@ answerRouter.delete(
   AnswerController.deleteAnswer,
 );
 
+answerRouter.post(
+  "/askie-answer",
+  authenticateUser,
+  AnswerController.askieAnswer,
+);
+
 export { answerRouter };

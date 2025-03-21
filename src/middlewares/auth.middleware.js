@@ -1,5 +1,9 @@
 import { prisma } from "../config/db/index.js";
-import { formatApiResponse, verifyAccessToken } from "../utils/helper.js";
+import {
+  calculateAccountAgeInDays,
+  formatApiResponse,
+  verifyAccessToken,
+} from "../utils/helper.js";
 
 async function authenticateUser(req, res, next) {
   try {
@@ -45,7 +49,10 @@ async function authenticateUser(req, res, next) {
         );
     }
 
-    req.user = user;
+    req.user = {
+      ...user,
+      accountAge: calculateAccountAgeInDays(user.createdAt),
+    };
     next();
   } catch (error) {
     console.error("Authentication error:", error);

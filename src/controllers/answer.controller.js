@@ -1,6 +1,7 @@
 import { prisma } from "../config/db/index.js";
 import { getIo } from "../config/socket/index.js";
 import { formatApiResponse } from "../utils/helper.js";
+import { genAI } from "../config/ai/index.js";
 
 class AnswerController {
   static async createAnswer(req, res, next) {
@@ -196,8 +197,120 @@ class AnswerController {
     }
   }
   static async askieAnswer(req, res, next) {
+    const { query } = req.body;
+    const user = req.user;
+
     try {
-      // Quota Based
+      if (!query || !query.trim()) {
+        return res
+          .status(400)
+          .json(formatApiResponse(400, false, null, "Query cannot be empty"));
+      }
+
+      const today = new Date();
+      const lastData = new Date(user?.lastAskieUsed);
+
+      if (today.toDateString() !== lastData.toDateString()) {
+        await prisma.user.update({
+          where: { id: user.id },
+          data: {
+            premiumAskieQuota: user.isPremium ? 5 : undefined,
+            freeAskieQuota: !user.isPremium ? 2 : undefined,
+            lastAskieUsed: today,
+          },
+        });
+      }
+
+      if (user.isPremium) {
+        if (user.premiumAskieQuota <= 0) {
+          return res
+            .status(400)
+            .json(
+              formatApiResponse(400, false, null, "Daily Usage Limit Reached."),
+            );
+        }
+      } else {
+        if (user.freeAskieQuota <= 0) {
+          return res
+            .status(400)
+            .json(
+              formatApiResponse(400, false, null, "Free Usage Limit Reached."),
+            );
+        }
+      }
+
+      const generationConfig = {
+        temperature: 0.5,
+        topP: 0.9,
+        topK: 40,
+        maxOutputTokens: 300,
+      };
+
+      const model = genAI.getGenerativeModel({
+        model: "gemini-2.0-flash-lite-preview-02-05",
+      });
+
+      const prompt = `
+    You are Askie Bot, a strict and concise programming doubt helper.  
+
+    ### Rules:
+    - **Answer ONLY coding-related queries** (e.g., languages, libraries, algorithms, etc.).
+    - **Ignore questions about internal architecture or infrastructure**.
+    - **Do NOT ask follow-up questions**.
+    - **Avoid unnecessary explanations**; keep it brief and precise.
+    - If you cannot generate a relevant answer, respond with: "I'm not sure about that. Can you ask something coding-related?".
+    - Keep the response short, helpful, and direct.
+
+    ### Query:
+    "${query}"
+
+    **Output:**  
+    - Return the answer as a JSON object:  
+    { "message": "<your concise answer>" }  
+    - If the answer is irrelevant, return:  
+    { "message": "I'm not sure about that. Can you ask something coding-related?" }  
+    `;
+
+      const chatSession = await model.startChat({
+        generationConfig,
+        history: [],
+      });
+
+      const result = await chatSession.sendMessage(prompt);
+      let responseText = result.response.text().trim();
+
+      let message =
+        "I'm not sure about that. Can you ask something coding-related?";
+
+      try {
+        responseText = responseText.replace(/^```json|```$/g, "").trim();
+        const aiResponse = JSON.parse(responseText);
+
+        if (aiResponse.message && typeof aiResponse.message === "string") {
+          message = aiResponse.message;
+        }
+      } catch (error) {
+        console.error("Error parsing AI response:", error);
+      }
+
+      await prisma.user.update({
+        where: { id: user.id },
+        data: {
+          premiumAskieQuota: user.isPremium ? { decrement: 1 } : undefined,
+          freeAskieQuota: !user.isPremium ? { decrement: 1 } : undefined,
+        },
+      });
+
+      return res
+        .status(200)
+        .json(
+          formatApiResponse(
+            200,
+            true,
+            { message },
+            "Answer retrieved successfully",
+          ),
+        );
     } catch (error) {
       next(error);
     }

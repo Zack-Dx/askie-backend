@@ -1,5 +1,4 @@
 import {
-  calculateAccountAgeInDays,
   formatApiResponse,
   removeFileFromDisk,
   uploadMediaToCloud,
@@ -13,36 +12,16 @@ class UserController {
       const user = req.user;
 
       if (user) {
-        return res.status(200).json(
-          formatApiResponse(
-            200,
-            true,
-            {
-              id: user.id,
-              email: user.email,
-              name: user.name,
-              picture: user.picture,
-              role: user.role,
-              linkedinUrl: user.linkedinUrl,
-              githubUrl: user.githubUrl,
-              portfolioUrl: user.portfolioUrl,
-              twitterUrl: user.twitterUrl,
-              questionsAsked: user.questionsAsked,
-              answersProvided: user.answersProvided,
-              accountAge: calculateAccountAgeInDays(user.createdAt),
-              location: user.location,
-              about: user.about,
-              isPublic: user.isPublic,
-              profession: user.profession,
-              isNewsSub: user.isNewsSub,
-              isPremium: user.isPremium,
-              premiumStartDate: user.premiumStartDate,
-              premiumEndDate: user.premiumEndDate,
-              subscriptionPlan: user.subscriptionPlan,
-            },
-            "User profile retrieved successfully",
-          ),
-        );
+        return res
+          .status(200)
+          .json(
+            formatApiResponse(
+              200,
+              true,
+              user,
+              "User profile retrieved successfully",
+            ),
+          );
       }
 
       return res
@@ -108,17 +87,16 @@ class UserController {
 
       // eslint-disable-next-line no-unused-vars
       const { createdAt, updatedAt, ...userProfileData } = updatedUser;
-      return res.status(200).json(
-        formatApiResponse(
-          200,
-          true,
-          {
-            ...userProfileData,
-            accountAge: calculateAccountAgeInDays(user.createdAt),
-          },
-          "User profile updated successfully",
-        ),
-      );
+      return res
+        .status(200)
+        .json(
+          formatApiResponse(
+            200,
+            true,
+            userProfileData,
+            "User profile updated successfully",
+          ),
+        );
     } catch (error) {
       next(error);
     }

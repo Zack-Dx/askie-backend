@@ -298,31 +298,16 @@ class AuthController {
         sameSite: CONFIG.NODE_ENV === "production" ? "none" : "lax",
       });
 
-      return res.status(201).json(
-        formatApiResponse(
-          201,
-          true,
-          {
-            id: user.id,
-            email: user.email,
-            name: user.name,
-            picture: user.picture,
-            role: user.role,
-            linkedinUrl: user.linkedinUrl,
-            githubUrl: user.githubUrl,
-            portfolioUrl: user.portfolioUrl,
-            twitterUrl: user.twitterUrl,
-            questionsAsked: user.questionsAsked,
-            answersProvided: user.answersProvided,
-            accountAge: calculateAccountAgeInDays(user.createdAt),
-            location: user.location,
-            about: user.about,
-            isPublic: user.isPublic,
-            profession: user.profession,
-          },
-          "User signed up successfully",
-        ),
-      );
+      return res
+        .status(201)
+        .json(
+          formatApiResponse(
+            201,
+            true,
+            { ...user, accountAge: calculateAccountAgeInDays(user.createdAt) },
+            "User signed up successfully",
+          ),
+        );
     } catch (error) {
       next(error);
     }
