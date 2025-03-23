@@ -143,7 +143,6 @@ export const extractImageUrls = (content) => {
   const regex = /<img[^>]+src="([^">]+)"/g;
   let match;
   const urls = [];
-
   while ((match = regex.exec(content)) !== null) {
     urls.push(match[1]);
   }
