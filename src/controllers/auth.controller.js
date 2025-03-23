@@ -55,16 +55,12 @@ class AuthController {
 
       const accessToken = generateAccessToken(user);
 
-      if (req.headers["user-agent"].includes("Mobile")) {
-        res.setHeader("Authorization", `Bearer ${accessToken}`);
-      } else {
-        res.cookie("token", accessToken, {
-          httpOnly: true,
-          secure: CONFIG.NODE_ENV === "production",
-          expires: new Date(Date.now() + 24 * 60 * 60 * 1000), // 1 day
-          sameSite: CONFIG.NODE_ENV === "production" ? "none" : "lax",
-        });
-      }
+      res.cookie("token", accessToken, {
+        httpOnly: true,
+        secure: CONFIG.NODE_ENV === "production",
+        expires: new Date(Date.now() + 24 * 60 * 60 * 1000), // 1 day
+        sameSite: CONFIG.NODE_ENV === "production" ? "none" : "lax",
+      });
 
       return res
         .status(200)
@@ -122,18 +118,16 @@ class AuthController {
           },
         });
       }
+
       const accessToken = generateAccessToken(user);
 
-      if (req.headers["user-agent"].includes("Mobile")) {
-        res.setHeader("Authorization", `Bearer ${accessToken}`);
-      } else {
-        res.cookie("token", accessToken, {
-          httpOnly: true,
-          secure: CONFIG.NODE_ENV === "production",
-          expires: new Date(Date.now() + 24 * 60 * 60 * 1000), // 1 day
-          sameSite: CONFIG.NODE_ENV === "production" ? "none" : "lax",
-        });
-      }
+      res.cookie("token", accessToken, {
+        httpOnly: true,
+        secure: CONFIG.NODE_ENV === "production",
+        expires: new Date(Date.now() + 24 * 60 * 60 * 1000), // 1 day
+        sameSite: CONFIG.NODE_ENV === "production" ? "none" : "lax",
+      });
+
       return res
         .status(200)
         .json(
@@ -227,16 +221,12 @@ class AuthController {
 
       const accessToken = generateAccessToken(user);
 
-      if (req.headers["user-agent"].includes("Mobile")) {
-        res.setHeader("Authorization", `Bearer ${accessToken}`);
-      } else {
-        res.cookie("token", accessToken, {
-          httpOnly: true,
-          secure: CONFIG.NODE_ENV === "production",
-          expires: new Date(Date.now() + 24 * 60 * 60 * 1000), // 1 day
-          sameSite: CONFIG.NODE_ENV === "production" ? "none" : "lax",
-        });
-      }
+      res.cookie("token", accessToken, {
+        httpOnly: true,
+        secure: CONFIG.NODE_ENV === "production",
+        expires: new Date(Date.now() + 24 * 60 * 60 * 1000), // 1 day
+        sameSite: CONFIG.NODE_ENV === "production" ? "none" : "lax",
+      });
 
       return res
         .status(200)
@@ -301,16 +291,13 @@ class AuthController {
 
       const accessToken = generateAccessToken(user);
 
-      if (req.headers["user-agent"].includes("Mobile")) {
-        res.setHeader("Authorization", `Bearer ${accessToken}`);
-      } else {
-        res.cookie("token", accessToken, {
-          httpOnly: true,
-          secure: CONFIG.NODE_ENV === "production",
-          expires: new Date(Date.now() + 24 * 60 * 60 * 1000), // 1 day
-          sameSite: CONFIG.NODE_ENV === "production" ? "none" : "lax",
-        });
-      }
+      res.cookie("token", accessToken, {
+        httpOnly: true,
+        secure: CONFIG.NODE_ENV === "production",
+        expires: new Date(Date.now() + 24 * 60 * 60 * 1000), // 1 day
+        sameSite: CONFIG.NODE_ENV === "production" ? "none" : "lax",
+      });
+
       return res
         .status(201)
         .json(
