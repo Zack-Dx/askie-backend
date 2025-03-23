@@ -13,6 +13,7 @@ import { paymentRouter } from "./routes/payment.routes.js";
 import { answerRouter } from "./routes/answer.routes.js";
 import http from "node:http";
 import { initSocket } from "./config/socket/index.js";
+import { backendActiveJobber } from "./utils/helper.js";
 
 const app = express();
 
@@ -54,5 +55,6 @@ const server = http.createServer(app);
 
 // Socket Initializer
 initSocket(server);
+backendActiveJobber();
 
 export { server };

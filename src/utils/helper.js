@@ -149,3 +149,28 @@ export const extractImageUrls = (content) => {
 
   return urls;
 };
+
+export const backendActiveJobber = () => {
+  const PING_INTERVAL = 3 * 60 * 1000;
+
+  setInterval(async () => {
+    try {
+      const response = await fetch(`https://askie-backend.onrender.com/health`);
+
+      if (!response.ok) {
+        throw new Error(`Ping failed with status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      console.log(
+        `[${new Date().toLocaleTimeString()}] Backend Check Successful:`,
+        data,
+      );
+    } catch (error) {
+      console.error(
+        `[${new Date().toLocaleTimeString()}] Backend Ping Failed:`,
+        error.message,
+      );
+    }
+  }, PING_INTERVAL);
+};
