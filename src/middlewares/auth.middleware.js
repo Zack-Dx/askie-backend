@@ -7,19 +7,12 @@ import {
 
 async function authenticateUser(req, res, next) {
   try {
-    const { token } = req.cookies;
+    let token;
 
-    if (!token) {
-      return res
-        .status(401)
-        .json(
-          formatApiResponse(
-            401,
-            false,
-            null,
-            "Access denied. No authentication token provided.",
-          ),
-        );
+    if (req.headers["authorization"]) {
+      token = req.headers["authorization"].split(" ")[1];
+    } else {
+      token = req.cookies.token;
     }
 
     const decoded = verifyAccessToken(token);
