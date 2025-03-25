@@ -259,7 +259,6 @@ class AnswerController {
       let sessionId = null;
       let history = [];
 
-      // 💡 Fetch session history by both sessionId and userId
       const lastSession = await prisma.chatSession.findFirst({
         where: { userId: user.id },
         orderBy: { createdAt: "desc" },
@@ -269,10 +268,7 @@ class AnswerController {
 
       const chatHistory = await prisma.chatSession.findMany({
         where: {
-          OR: [
-            { sessionId },
-            { userId: user.id }, // Fetching all user-related history
-          ],
+          OR: [{ sessionId }, { userId: user.id }],
         },
         orderBy: { createdAt: "asc" },
         take: 10,
@@ -280,7 +276,7 @@ class AnswerController {
 
       history = chatHistory.map((msg) => {
         return {
-          role: msg.role === "user" ? "user" : "model", // ✅ Correct role mapping
+          role: msg.role === "user" ? "user" : "model",
           parts: [{ text: msg.message }],
         };
       });
@@ -414,7 +410,6 @@ You are Askie Bot, a friendly and knowledgeable technical assistant, capable of 
         console.error("Error parsing AI response:", error);
       }
 
-      // Store user query and AI response
       await prisma.chatSession.create({
         data: {
           userId: user.id,
@@ -429,11 +424,10 @@ You are Askie Bot, a friendly and knowledgeable technical assistant, capable of 
           userId: user.id,
           sessionId,
           message,
-          role: "model", // ✅ Use "model" instead of "assistant"
+          role: "model",
         },
       });
 
-      // Update quota
       await prisma.user.update({
         where: { id: user.id },
         data: {
