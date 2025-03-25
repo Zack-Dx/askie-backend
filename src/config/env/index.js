@@ -20,9 +20,11 @@ const {
   CLIENT_URL,
   PAYMENT_WEBHOOK_SECRET,
   AI_KEY,
+  BACKEND_URL,
 } = process.env;
 
 export const CONFIG = {
+  BACKEND_URL,
   NODE_ENV,
   PORT,
   API_VERSION,
