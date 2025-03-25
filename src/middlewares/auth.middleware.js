@@ -7,8 +7,23 @@ import {
 
 async function authenticateUser(req, res, next) {
   try {
+    const userAgent = req.headers["user-agent"] || "";
+    const isMobile = /mobile|android|iphone|ipad|ipod|windows phone/i.test(
+      userAgent,
+    );
     const token =
       req.headers.authorization?.split(" ")[1] || req.cookies?.token;
+
+    if (isMobile) {
+      console.log("\n🔥 Mobile Request Detected 🔥");
+      console.log("📱 User-Agent:", userAgent);
+      console.log(
+        "🔑 Authorization Header:",
+        req.headers.authorization || "N/A",
+      );
+      console.log("🍪 Cookie Token:", req.cookies?.token || "N/A");
+      console.log("✅ Final Token Used:", token || "N/A");
+    }
 
     if (!token) {
       return res
