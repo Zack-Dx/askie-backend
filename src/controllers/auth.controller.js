@@ -58,6 +58,10 @@ class AuthController {
       res.cookie("token", accessToken, {
         httpOnly: true,
         secure: CONFIG.NODE_ENV === "production",
+        domain:
+          CONFIG.NODE_ENV === "production"
+            ? "askie-backend.onrender.com"
+            : "localhost",
         expires: new Date(Date.now() + 24 * 60 * 60 * 1000), // 1 day
         sameSite: CONFIG.NODE_ENV === "production" ? "none" : "lax",
       });
@@ -124,6 +128,10 @@ class AuthController {
       res.cookie("token", accessToken, {
         httpOnly: true,
         secure: CONFIG.NODE_ENV === "production",
+        domain:
+          CONFIG.NODE_ENV === "production"
+            ? "askie-backend.onrender.com"
+            : "localhost",
         expires: new Date(Date.now() + 24 * 60 * 60 * 1000), // 1 day
         sameSite: CONFIG.NODE_ENV === "production" ? "none" : "lax",
       });
@@ -224,6 +232,10 @@ class AuthController {
       res.cookie("token", accessToken, {
         httpOnly: true,
         secure: CONFIG.NODE_ENV === "production",
+        domain:
+          CONFIG.NODE_ENV === "production"
+            ? "askie-backend.onrender.com"
+            : "localhost",
         expires: new Date(Date.now() + 24 * 60 * 60 * 1000), // 1 day
         sameSite: CONFIG.NODE_ENV === "production" ? "none" : "lax",
       });
@@ -294,6 +306,10 @@ class AuthController {
       res.cookie("token", accessToken, {
         httpOnly: true,
         secure: CONFIG.NODE_ENV === "production",
+        domain:
+          CONFIG.NODE_ENV === "production"
+            ? "askie-backend.onrender.com"
+            : "localhost",
         expires: new Date(Date.now() + 24 * 60 * 60 * 1000), // 1 day
         sameSite: CONFIG.NODE_ENV === "production" ? "none" : "lax",
       });
@@ -318,6 +334,10 @@ class AuthController {
       res.clearCookie("token", {
         httpOnly: true,
         secure: CONFIG.NODE_ENV === "production",
+        domain:
+          CONFIG.NODE_ENV === "production"
+            ? "askie-backend.onrender.com"
+            : "localhost",
         sameSite: CONFIG.NODE_ENV === "production" ? "none" : "lax",
       });
 
