@@ -155,7 +155,7 @@ export const backendActiveJobber = () => {
 
   setInterval(async () => {
     try {
-      const response = await fetch(`https://askie-backend.onrender.com/health`);
+      const response = await fetch(`https://${CONFIG.BACKEND_HOST}/health`);
 
       if (!response.ok) {
         throw new Error(`Ping failed with status: ${response.status}`);

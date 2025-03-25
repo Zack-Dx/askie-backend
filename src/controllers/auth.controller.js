@@ -59,7 +59,7 @@ class AuthController {
         httpOnly: true,
         secure: CONFIG.NODE_ENV === "production",
         domain:
-          CONFIG.NODE_ENV === "production" ? CONFIG.BACKEND_URL : "localhost",
+          CONFIG.NODE_ENV === "production" ? CONFIG.BACKEND_HOST : "localhost",
         expires: new Date(Date.now() + 24 * 60 * 60 * 1000), // 1 day
         sameSite: CONFIG.NODE_ENV === "production" ? "none" : "lax",
       });
@@ -127,7 +127,7 @@ class AuthController {
         httpOnly: true,
         secure: CONFIG.NODE_ENV === "production",
         domain:
-          CONFIG.NODE_ENV === "production" ? CONFIG.BACKEND_URL : "localhost",
+          CONFIG.NODE_ENV === "production" ? CONFIG.BACKEND_HOST : "localhost",
         expires: new Date(Date.now() + 24 * 60 * 60 * 1000), // 1 day
         sameSite: CONFIG.NODE_ENV === "production" ? "none" : "lax",
       });
@@ -229,7 +229,7 @@ class AuthController {
         httpOnly: true,
         secure: CONFIG.NODE_ENV === "production",
         domain:
-          CONFIG.NODE_ENV === "production" ? CONFIG.BACKEND_URL : "localhost",
+          CONFIG.NODE_ENV === "production" ? CONFIG.BACKEND_HOST : "localhost",
         expires: new Date(Date.now() + 24 * 60 * 60 * 1000), // 1 day
         sameSite: CONFIG.NODE_ENV === "production" ? "none" : "lax",
       });
@@ -301,7 +301,7 @@ class AuthController {
         httpOnly: true,
         secure: CONFIG.NODE_ENV === "production",
         domain:
-          CONFIG.NODE_ENV === "production" ? CONFIG.BACKEND_URL : "localhost",
+          CONFIG.NODE_ENV === "production" ? CONFIG.BACKEND_HOST : "localhost",
         expires: new Date(Date.now() + 24 * 60 * 60 * 1000), // 1 day
         sameSite: CONFIG.NODE_ENV === "production" ? "none" : "lax",
       });
@@ -327,7 +327,7 @@ class AuthController {
         httpOnly: true,
         secure: CONFIG.NODE_ENV === "production",
         domain:
-          CONFIG.NODE_ENV === "production" ? CONFIG.BACKEND_URL : "localhost",
+          CONFIG.NODE_ENV === "production" ? CONFIG.BACKEND_HOST : "localhost",
         sameSite: CONFIG.NODE_ENV === "production" ? "none" : "lax",
       });
 
