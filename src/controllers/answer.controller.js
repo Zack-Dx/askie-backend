@@ -452,8 +452,34 @@ You are Askie Bot, a friendly and knowledgeable technical assistant, capable of 
     }
   }
   static async askieConvoLoad(req, res, next) {
+    const user = req.user;
     try {
-      // Do Something
+      const preloadedMessages = await prisma.chatSession.findMany({
+        where: {
+          userId: user.id,
+        },
+        select: {
+          id: true,
+          message: true,
+          createdAt: true,
+          role: true,
+        },
+        take: 20,
+        orderBy: {
+          createdAt: "asc",
+        },
+      });
+
+      return res
+        .status(200)
+        .json(
+          formatApiResponse(
+            200,
+            true,
+            { messages: preloadedMessages },
+            "Convo loaded successfully.",
+          ),
+        );
     } catch (error) {
       next(error);
     }
