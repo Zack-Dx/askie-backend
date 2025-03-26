@@ -143,6 +143,7 @@ class QuestionController {
               name: true,
               picture: true,
               id: true,
+              isPremium: true,
             },
           },
           answers: true,
@@ -209,6 +210,7 @@ class QuestionController {
               name: true,
               picture: true,
               id: true,
+              isPremium: true,
             },
           },
           votes: {
@@ -275,6 +277,7 @@ class QuestionController {
               name: true,
               picture: true,
               id: true,
+              isPremium: true,
             },
           },
           votes: {
@@ -292,6 +295,7 @@ class QuestionController {
                   name: true,
                   picture: true,
                   id: true,
+                  isPremium: true,
                 },
               },
             },

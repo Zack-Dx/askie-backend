@@ -38,6 +38,7 @@ class AnswerController {
               name: true,
               picture: true,
               id: true,
+              isPremium: true,
             },
           },
         },
@@ -446,6 +447,13 @@ You are Askie Bot, a friendly and knowledgeable technical assistant, capable of 
             "Answer retrieved successfully",
           ),
         );
+    } catch (error) {
+      next(error);
+    }
+  }
+  static async askieConvoLoad(req, res, next) {
+    try {
+      // Do Something
     } catch (error) {
       next(error);
     }

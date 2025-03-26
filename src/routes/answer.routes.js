@@ -40,4 +40,10 @@ answerRouter.post(
   AnswerController.askieAnswer,
 );
 
+answerRouter.get(
+  "/askie-chat",
+  authenticateUser,
+  AnswerController.askieConvoLoad,
+);
+
 export { answerRouter };
