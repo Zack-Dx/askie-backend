@@ -4,7 +4,7 @@ import {
   uploadMediaToCloud,
 } from "../utils/helper.js";
 import mediaUploader from "../config/media/index.js";
-import { prisma } from "../config/db/index.js";
+import { cacheClient, prisma } from "../config/db/index.js";
 import axios from "axios";
 
 class UserController {
@@ -211,12 +211,27 @@ class UserController {
   }
   static async getArticles(req, res, next) {
     try {
+      const key = "articles";
+      const cachedResult = await cacheClient.get(key);
+      if (cachedResult) {
+        return res
+          .status(200)
+          .json(
+            formatApiResponse(
+              200,
+              true,
+              { articles: JSON.parse(cachedResult) },
+              "Articles fetched successfully",
+            ),
+          );
+      }
+
       const response = await axios.get(
         `https://dev.to/api/articles?per_page=6`,
       );
 
       const articles = response.data;
-
+      await cacheClient.set(key, JSON.stringify(articles), "EX", 43200); // 12hrs
       return res
         .status(200)
         .json(

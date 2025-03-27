@@ -2,6 +2,7 @@ import { config } from "dotenv";
 config();
 
 const {
+  CACHE_DB_URI,
   NODE_ENV,
   PORT,
   API_VERSION,
@@ -24,6 +25,7 @@ const {
 } = process.env;
 
 export const CONFIG = {
+  CACHE_DB_URI,
   BACKEND_HOST,
   NODE_ENV,
   PORT,
