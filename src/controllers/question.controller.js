@@ -1,5 +1,5 @@
 import { genAI } from "../config/ai/index.js";
-import { prisma } from "../config/db/index.js";
+import { cacheClient, prisma } from "../config/db/index.js";
 import {
   deleteMediaFromCloud as deleteMedia,
   extractImageUrls,
@@ -9,6 +9,8 @@ import {
   removeFileFromDisk,
   uploadMediaToCloud,
 } from "../utils/helper.js";
+
+const key = "questions";
 class QuestionController {
   static async createQuestion(req, res, next) {
     try {
@@ -83,6 +85,7 @@ class QuestionController {
           console.error("Error parsing AI-generated tags:", error);
           tags = [];
         }
+        await cacheClient.del(key);
       } catch (error) {
         console.error("Error generating tags:", error);
         tags = [];
@@ -192,6 +195,20 @@ class QuestionController {
 
   static async getAllQuestions(req, res, next) {
     try {
+      const cachedQuestions = await cacheClient.get(key);
+      if (cachedQuestions) {
+        return res
+          .status(200)
+          .json(
+            formatApiResponse(
+              200,
+              true,
+              JSON.parse(cachedQuestions),
+              "Questions retrieved successfully",
+            ),
+          );
+      }
+
       const questions = await prisma.question.findMany({
         include: {
           answers: true,
@@ -239,6 +256,8 @@ class QuestionController {
           };
         }),
       );
+
+      await cacheClient.set(key, JSON.stringify(formattedQuestions), "EX", 120); // 2 mins
 
       return res
         .status(200)
@@ -394,6 +413,8 @@ class QuestionController {
         },
       });
 
+      await cacheClient.del(key);
+
       return res
         .status(200)
         .json(
@@ -455,6 +476,8 @@ class QuestionController {
       await prisma.question.delete({
         where: { id },
       });
+
+      await cacheClient.del(key);
 
       return res
         .status(200)
