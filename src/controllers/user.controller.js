@@ -212,7 +212,7 @@ class UserController {
   static async getArticles(req, res, next) {
     try {
       const response = await axios.get(
-        `https://dev.to/api/articles?tag=webdev&per_page=6&sort_by=positive_reactions`,
+        `https://dev.to/api/articles?per_page=6`,
       );
 
       const articles = response.data;
