@@ -5,6 +5,7 @@ import {
 } from "../utils/helper.js";
 import mediaUploader from "../config/media/index.js";
 import { prisma } from "../config/db/index.js";
+import axios from "axios";
 
 class UserController {
   static async profile(req, res, next) {
@@ -204,6 +205,28 @@ class UserController {
       return res
         .status(200)
         .json(formatApiResponse(200, true, null, "Subscribed successfully"));
+    } catch (error) {
+      next(error);
+    }
+  }
+  static async getArticles(req, res, next) {
+    try {
+      const response = await axios.get(
+        `https://dev.to/api/articles?tag=webdev&per_page=6&sort_by=positive_reactions`,
+      );
+
+      const articles = response.data;
+
+      return res
+        .status(200)
+        .json(
+          formatApiResponse(
+            200,
+            true,
+            { articles },
+            "Articles fetched successfully",
+          ),
+        );
     } catch (error) {
       next(error);
     }

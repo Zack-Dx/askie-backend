@@ -18,5 +18,6 @@ userRouter.patch(
   UserController.updateUserProfilePicture,
 );
 userRouter.post("/newsletter", authenticateUser, UserController.newsLetter);
+userRouter.get("/articles", authenticateUser, UserController.getArticles);
 
 export { userRouter };
