@@ -1,4 +1,4 @@
-import { prisma } from "../config/db/index.js";
+import { cacheClient, prisma } from "../config/db/index.js";
 import { formatApiResponse, getVoteCount } from "../utils/helper.js";
 
 class VoteController {
@@ -64,7 +64,7 @@ class VoteController {
       await prisma.vote.create({
         data: { value, questionId: id, userId },
       });
-
+      await cacheClient.del("questions");
       return res.status(201).json(
         formatApiResponse(
           201,
@@ -143,7 +143,7 @@ class VoteController {
       await prisma.vote.create({
         data: { value, answerId: id, userId },
       });
-
+      await cacheClient.del("questions");
       return res.status(201).json(
         formatApiResponse(
           201,
