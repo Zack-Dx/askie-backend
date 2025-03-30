@@ -248,3 +248,15 @@ You are an AI fact-checker with expert-level accuracy. Your job is to thoroughly
     ? aiResponse.score
     : null;
 };
+
+export const isEmptyOrWhitespace = (value) => {
+  if (!value) return true;
+
+  const sanitized = value
+    .replace(/<[^>]*>/g, "")
+    .replace(/&nbsp;/g, "")
+    .replace(/\s+/g, "")
+    .trim();
+
+  return sanitized === "";
+};

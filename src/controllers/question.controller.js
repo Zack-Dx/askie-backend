@@ -6,6 +6,7 @@ import {
   formatApiResponse,
   getSelfVoteValue,
   getVoteCount,
+  isEmptyOrWhitespace,
   removeFileFromDisk,
   uploadMediaToCloud,
 } from "../utils/helper.js";
@@ -17,7 +18,7 @@ class QuestionController {
       const { title, content } = req.body;
       const userId = req.user.id;
 
-      if (!title || !content) {
+      if (isEmptyOrWhitespace(title) || isEmptyOrWhitespace(content)) {
         return res
           .status(400)
           .json(
@@ -25,7 +26,7 @@ class QuestionController {
               400,
               false,
               null,
-              "Title and Content are required",
+              "Title and Meaningful Content is required",
             ),
           );
       }
@@ -363,6 +364,19 @@ class QuestionController {
       const { id } = req.params;
       const userId = req.user.id;
       const { title, content } = req.body;
+
+      if (isEmptyOrWhitespace(title) || isEmptyOrWhitespace(content)) {
+        return res
+          .status(400)
+          .json(
+            formatApiResponse(
+              400,
+              false,
+              null,
+              "Title and Meaningful Content is required",
+            ),
+          );
+      }
 
       const question = await prisma.question.findUnique({
         where: { id },

@@ -1,6 +1,10 @@
 import { prisma } from "../config/db/index.js";
 import { getIo } from "../config/socket/index.js";
-import { answerFactChecker, formatApiResponse } from "../utils/helper.js";
+import {
+  answerFactChecker,
+  formatApiResponse,
+  isEmptyOrWhitespace,
+} from "../utils/helper.js";
 import { genAI } from "../config/ai/index.js";
 import crypto from "node:crypto";
 
@@ -10,6 +14,14 @@ class AnswerController {
     const { content } = req.body;
     const username = req.user.name;
     const userId = req.user.id;
+
+    if (isEmptyOrWhitespace(content)) {
+      return res
+        .status(400)
+        .json(
+          formatApiResponse(400, false, null, "Meaningful Content is required"),
+        );
+    }
 
     try {
       const question = await prisma.question.findUnique({
@@ -136,6 +148,15 @@ class AnswerController {
     const { answerId } = req.params;
     const { content } = req.body;
     const userId = req.user.id;
+
+    if (isEmptyOrWhitespace(content)) {
+      return res
+        .status(400)
+        .json(
+          formatApiResponse(400, false, null, "Meaningful Content is required"),
+        );
+    }
+
     try {
       const answer = await prisma.answer.findUnique({
         where: { id: answerId },
