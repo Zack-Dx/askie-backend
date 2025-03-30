@@ -69,6 +69,7 @@ model Answer {
   votes       Vote[]      
   createdAt   DateTime     @default(now())
   updatedAt   DateTime     @updatedAt
+  factScore   Int          @default(0) 
   Notification Notification[]
 }
 

@@ -1,6 +1,6 @@
 import { prisma } from "../config/db/index.js";
 import { getIo } from "../config/socket/index.js";
-import { formatApiResponse } from "../utils/helper.js";
+import { answerFactChecker, formatApiResponse } from "../utils/helper.js";
 import { genAI } from "../config/ai/index.js";
 import crypto from "node:crypto";
 
@@ -22,11 +22,31 @@ class AnswerController {
           .json(formatApiResponse(404, false, null, "Question not found"));
       }
 
+      const factScore = await answerFactChecker(
+        question.title,
+        question.content,
+        content,
+      );
+
+      if (factScore === 0 || factScore === null) {
+        return res
+          .status(400)
+          .json(
+            formatApiResponse(
+              400,
+              false,
+              null,
+              "Answer lacks factual accuracy. Please review and submit a valid response.",
+            ),
+          );
+      }
+
       const answer = await prisma.answer.create({
         data: {
           content,
           userId,
           questionId: questionId,
+          factScore,
         },
       });
 
@@ -140,9 +160,38 @@ class AnswerController {
           );
       }
 
+      const question = await prisma.question.findUnique({
+        where: { id: answer.questionId },
+      });
+
+      if (!question) {
+        return res
+          .status(404)
+          .json(formatApiResponse(404, false, null, "Question not found"));
+      }
+
+      const factScore = await answerFactChecker(
+        question.title,
+        question.content,
+        content,
+      );
+
+      if (factScore === 0 || factScore === null) {
+        return res
+          .status(400)
+          .json(
+            formatApiResponse(
+              400,
+              false,
+              null,
+              "Answer lacks factual accuracy. Please review and submit a valid response.",
+            ),
+          );
+      }
+
       const updatedAnswer = await prisma.answer.update({
         where: { id: answerId },
-        data: { content },
+        data: { content, factScore },
       });
 
       return res

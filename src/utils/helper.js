@@ -4,6 +4,7 @@ import fs from "node:fs/promises";
 import mediaUploader from "../config/media/index.js";
 import { CONFIG } from "../config/env/index.js";
 import { prisma } from "../config/db/index.js";
+import { genAI } from "../config/ai/index.js";
 
 export function formatApiResponse(statusCode, status, data, message) {
   return {
@@ -173,4 +174,63 @@ export const backendActiveJobber = () => {
       );
     }
   }, PING_INTERVAL);
+};
+
+export const answerFactChecker = async (
+  questionTitle,
+  questionContent,
+  answerContent,
+) => {
+  const prompt = `
+### 🎯 **Fact-Checking Task**
+You are an AI fact-checker. Your job is to verify the accuracy and relevance of an answer based on the provided question and context.  
+- **Question Title:** ${questionTitle.trim()}  
+- **Question Content:** ${questionContent.trim()}  
+- **Answer Content:** ${answerContent.trim()}  
+
+### ✅ **Your Task:**
+- Compare the **Answer Content** against the **Question Title** and **Content**.
+- Determine the factual accuracy, consistency, and relevance.
+- **Score the answer from 0 to 100**, where:
+  - **0-30:** Highly inaccurate or irrelevant.
+  - **31-60:** Partially accurate but incomplete or inconsistent.
+  - **61-85:** Mostly accurate with minor inconsistencies.
+  - **86-100:** Highly accurate, relevant, and consistent.
+
+### 🚀 **Output Format:**
+\`\`\`json
+{ "score": <integer from 0 to 100> }
+\`\`\`
+`;
+
+  const model = genAI.getGenerativeModel({
+    model: "gemini-2.0-flash-lite-preview-02-05",
+  });
+
+  const generationConfig = {
+    maxOutputTokens: 300,
+    temperature: 0.1,
+  };
+
+  const chatSession = await model.startChat({
+    generationConfig,
+    history: [],
+  });
+
+  const result = await chatSession.sendMessage(prompt);
+  let responseText = await result.response.text().trim();
+
+  responseText = responseText.replace(/^```json|```$/g, "").trim();
+
+  const aiResponse = (() => {
+    try {
+      return JSON.parse(responseText);
+    } catch {
+      return { score: null };
+    }
+  })();
+
+  return aiResponse.score && typeof aiResponse.score === "number"
+    ? aiResponse.score
+    : null;
 };
