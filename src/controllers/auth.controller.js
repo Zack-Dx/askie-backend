@@ -22,7 +22,14 @@ class AuthController {
       if (!user) {
         return res
           .status(404)
-          .json(formatApiResponse(404, false, null, "User not found"));
+          .json(
+            formatApiResponse(
+              404,
+              false,
+              null,
+              "Unable to authorize. Please check username/password combination",
+            ),
+          );
       }
 
       if (!user.password) {
