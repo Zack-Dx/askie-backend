@@ -182,20 +182,34 @@ export const answerFactChecker = async (
   answerContent,
 ) => {
   const prompt = `
-### 🎯 **Fact-Checking Task**
-You are an AI fact-checker. Your job is to verify the accuracy and relevance of an answer based on the provided question and context.  
+### 🎯 **Smart Fact-Checking Task**
+You are an AI fact-checker with expert-level accuracy. Your job is to thoroughly verify the accuracy, consistency, and relevance of an answer against the provided question and its context.  
+
+### ✅ **Input Data**
 - **Question Title:** ${questionTitle.trim()}  
 - **Question Content:** ${questionContent.trim()}  
 - **Answer Content:** ${answerContent.trim()}  
 
-### ✅ **Your Task:**
-- Compare the **Answer Content** against the **Question Title** and **Content**.
-- Determine the factual accuracy, consistency, and relevance.
-- **Score the answer from 0 to 100**, where:
-  - **0-30:** Highly inaccurate or irrelevant.
-  - **31-60:** Partially accurate but incomplete or inconsistent.
-  - **61-85:** Mostly accurate with minor inconsistencies.
-  - **86-100:** Highly accurate, relevant, and consistent.
+### 🔥 **Verification Steps**
+1. **Contextual Matching:**  
+   - Ensure the answer directly addresses the question.  
+   - Verify whether it provides a factual and relevant response.  
+   - Identify any unrelated or incorrect information.  
+
+2. **Consistency Check:**  
+   - Confirm the consistency between the answer and the provided question content.  
+   - Detect factual contradictions or inaccuracies.  
+
+3. **Relevance Analysis:**  
+   - Evaluate how directly the answer solves or responds to the question.  
+   - Detect irrelevant or generic responses.  
+
+### 🔥 **Scoring Criteria**
+- **0-20:** 🚫 Completely inaccurate or irrelevant.  
+- **21-40:** ⚠️ Mostly inaccurate with partial relevance.  
+- **41-60:** 🟡 Partially accurate but incomplete or inconsistent.  
+- **61-80:** ✅ Mostly accurate with minor inconsistencies.  
+- **81-100:** 🎯 Highly accurate, relevant, and consistent.  
 
 ### 🚀 **Output Format:**
 \`\`\`json
@@ -208,8 +222,8 @@ You are an AI fact-checker. Your job is to verify the accuracy and relevance of 
   });
 
   const generationConfig = {
-    maxOutputTokens: 300,
-    temperature: 0.1,
+    maxOutputTokens: 350,
+    temperature: 0.05,
   };
 
   const chatSession = await model.startChat({
@@ -218,8 +232,8 @@ You are an AI fact-checker. Your job is to verify the accuracy and relevance of 
   });
 
   const result = await chatSession.sendMessage(prompt);
-  let responseText = await result.response.text().trim();
 
+  let responseText = await result.response.text().trim();
   responseText = responseText.replace(/^```json|```$/g, "").trim();
 
   const aiResponse = (() => {
