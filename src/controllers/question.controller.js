@@ -32,15 +32,163 @@ class QuestionController {
       }
 
       const generationConfig = {
-        temperature: 0.7,
-        topP: 0.95,
-        topK: 64,
-        maxOutputTokens: 200,
+        temperature: 0.2,
+        topP: 0.9,
+        topK: 40,
+        maxOutputTokens: 100,
       };
 
       const model = genAI.getGenerativeModel({
         model: "gemini-2.0-flash-lite-preview-02-05",
       });
+
+      /*  Validation */
+      const validationPrompt = `
+You are an AI content moderator that strictly validates whether a question is a clear, detailed, and technical programming-related query.  
+Your goal is to **allow only high-quality, on-topic questions** and block any off-topic, irrelevant, or inappropriate content.
+
+---
+
+### ✅ **Validation Rules:**
+
+1️⃣ **Return "VALID"** if:  
+- The question is **strictly related to programming, development, or software engineering**.  
+- It includes **specific technical details** like code snippets, error messages, or clear context.  
+- It refers to **programming languages, frameworks, libraries, APIs, algorithms, databases, DevOps, or tools**.  
+- It contains **problem-solving intent** or asks for guidance on a technical challenge.  
+- It demonstrates **effort and clarity**.  
+
+---
+
+2️⃣ **Return "INVALID"** if:  
+- It is **non-technical** or unrelated to programming (e.g., weather, politics, health, sports, entertainment, finance).  
+- It lacks technical relevance, even if it mentions a tech-related keyword.  
+- It contains **vague, low-effort, or nonsensical content** (e.g., "help me," "I have a question," "12345").  
+- It contains **generic or incomplete information** with no programming context (e.g., "How to learn coding?").  
+- It is **opinion-based** (e.g., "What is the best programming language?").  
+- It contains **spam, promotions, or irrelevant links**.  
+
+---
+
+3️⃣ **Return "ABUSIVE"** if:  
+- It contains **profane, offensive, or discriminatory language**.  
+- It promotes hate speech, violence, or harassment.  
+- It includes **sexually explicit, racist, or inflammatory content**.  
+
+---
+
+### 🔥 **Enhanced Examples:**
+
+✅ **Valid (Technical)**  
+**Title:** "How to fix CORS errors in Node.js and React?"  
+**Content:** "I'm using React for the frontend and Node.js for the backend. I'm getting CORS policy errors when making API requests. How can I resolve this?"  
+✅ Output: **"VALID"**
+
+✅ **Valid (Specific Error Message)**  
+**Title:** "Why am I getting 'undefined is not a function' in JavaScript?"  
+**Content:** "I'm using map() on an object but getting 'undefined is not a function' error. How do I fix this?"  
+✅ Output: **"VALID"**
+
+---
+
+❌ **Invalid (Non-technical)**  
+**Title:** "What is the weather in London today?"  
+**Content:** "Can someone tell me the current temperature?"  
+❌ Output: **"INVALID"**
+
+❌ **Invalid (Fake technical)**  
+**Title:** "How to install Python on Mars?"  
+**Content:** "I want to code on Mars with Python. What should I do?"  
+❌ Output: **"INVALID"**
+
+❌ **Invalid (Vague/Low-effort)**  
+**Title:** "Help me with coding"  
+**Content:** "I have an issue. Any suggestions?"  
+❌ Output: **"INVALID"**
+
+❌ **Invalid (Opinion-based)**  
+**Title:** "What's the best IDE in 2025?"  
+**Content:** "I'm curious to know what IDEs are trending. Any opinions?"  
+❌ Output: **"INVALID"**
+
+❌ **Invalid (Spam)**  
+**Title:** "Free crypto giveaway!"  
+**Content:** "Click this link to claim your free crypto."  
+❌ Output: **"INVALID"**
+
+---
+
+❌ **Abusive (Profanity)**  
+**Title:** "You are a moron"  
+**Content:** "Get lost, loser!"  
+❌ Output: **"ABUSIVE"**
+
+❌ **Abusive (Insulting)**  
+**Title:** "Your platform is trash"  
+**Content:** "You guys are so dumb and useless."  
+❌ Output: **"ABUSIVE"**
+
+---
+
+### 🚀 **Question:**
+**Title:** "${title}"  
+**Content:** "${content}"  
+
+✅ **Output:**  
+- Return only **"VALID"**, **"INVALID"**, or **"ABUSIVE"**.  
+- Do NOT include any other text, explanations, or formatting.  
+`;
+
+      try {
+        const validationSession = await model.startChat({
+          generationConfig,
+          history: [],
+        });
+        const validationResult =
+          await validationSession.sendMessage(validationPrompt);
+        const validationResponse = validationResult.response
+          .text()
+          .trim()
+          .toUpperCase();
+
+        if (validationResponse === "INVALID") {
+          return res
+            .status(400)
+            .json(
+              formatApiResponse(
+                400,
+                false,
+                null,
+                "This question is not a valid technical query.",
+              ),
+            );
+        }
+
+        if (validationResponse === "ABUSIVE") {
+          return res
+            .status(400)
+            .json(
+              formatApiResponse(
+                400,
+                false,
+                null,
+                "Inappropriate or abusive content detected.",
+              ),
+            );
+        }
+      } catch (error) {
+        console.error("Error validating question:", error);
+        return res
+          .status(500)
+          .json(
+            formatApiResponse(
+              500,
+              false,
+              null,
+              "Failed to validate question. Please try again.",
+            ),
+          );
+      }
 
       /* Dynamic Tag Gen*/
       let tags = [];
@@ -62,6 +210,7 @@ class QuestionController {
 
       Only return the JSON array with tag names and nothing else.`;
 
+        // Tag Generation
         const chatSession = await model.startChat({
           generationConfig,
           history: [],
@@ -92,8 +241,8 @@ class QuestionController {
         tags = [];
       }
 
-      let context = "";
       /* Question Context Generation */
+      let context = "";
       try {
         const contextPrompt = `Generate a concise one-line summary for the given technical question.
 
@@ -394,6 +543,165 @@ class QuestionController {
               false,
               null,
               "Unauthorized to update this question",
+            ),
+          );
+      }
+
+      const generationConfig = {
+        temperature: 0.2,
+        topP: 0.9,
+        topK: 40,
+        maxOutputTokens: 100,
+      };
+
+      const model = genAI.getGenerativeModel({
+        model: "gemini-2.0-flash-lite-preview-02-05",
+      });
+
+      /*  Validation */
+      const validationPrompt = `
+You are an AI content moderator that strictly validates whether a question is a clear, detailed, and technical programming-related query.  
+Your goal is to **allow only high-quality, on-topic questions** and block any off-topic, irrelevant, or inappropriate content.
+
+---
+
+### ✅ **Validation Rules:**
+
+1️⃣ **Return "VALID"** if:  
+- The question is **strictly related to programming, development, or software engineering**.  
+- It includes **specific technical details** like code snippets, error messages, or clear context.  
+- It refers to **programming languages, frameworks, libraries, APIs, algorithms, databases, DevOps, or tools**.  
+- It contains **problem-solving intent** or asks for guidance on a technical challenge.  
+- It demonstrates **effort and clarity**.  
+
+---
+
+2️⃣ **Return "INVALID"** if:  
+- It is **non-technical** or unrelated to programming (e.g., weather, politics, health, sports, entertainment, finance).  
+- It lacks technical relevance, even if it mentions a tech-related keyword.  
+- It contains **vague, low-effort, or nonsensical content** (e.g., "help me," "I have a question," "12345").  
+- It contains **generic or incomplete information** with no programming context (e.g., "How to learn coding?").  
+- It is **opinion-based** (e.g., "What is the best programming language?").  
+- It contains **spam, promotions, or irrelevant links**.  
+
+---
+
+3️⃣ **Return "ABUSIVE"** if:  
+- It contains **profane, offensive, or discriminatory language**.  
+- It promotes hate speech, violence, or harassment.  
+- It includes **sexually explicit, racist, or inflammatory content**.  
+
+---
+
+### 🔥 **Enhanced Examples:**
+
+✅ **Valid (Technical)**  
+**Title:** "How to fix CORS errors in Node.js and React?"  
+**Content:** "I'm using React for the frontend and Node.js for the backend. I'm getting CORS policy errors when making API requests. How can I resolve this?"  
+✅ Output: **"VALID"**
+
+✅ **Valid (Specific Error Message)**  
+**Title:** "Why am I getting 'undefined is not a function' in JavaScript?"  
+**Content:** "I'm using map() on an object but getting 'undefined is not a function' error. How do I fix this?"  
+✅ Output: **"VALID"**
+
+---
+
+❌ **Invalid (Non-technical)**  
+**Title:** "What is the weather in London today?"  
+**Content:** "Can someone tell me the current temperature?"  
+❌ Output: **"INVALID"**
+
+❌ **Invalid (Fake technical)**  
+**Title:** "How to install Python on Mars?"  
+**Content:** "I want to code on Mars with Python. What should I do?"  
+❌ Output: **"INVALID"**
+
+❌ **Invalid (Vague/Low-effort)**  
+**Title:** "Help me with coding"  
+**Content:** "I have an issue. Any suggestions?"  
+❌ Output: **"INVALID"**
+
+❌ **Invalid (Opinion-based)**  
+**Title:** "What's the best IDE in 2025?"  
+**Content:** "I'm curious to know what IDEs are trending. Any opinions?"  
+❌ Output: **"INVALID"**
+
+❌ **Invalid (Spam)**  
+**Title:** "Free crypto giveaway!"  
+**Content:** "Click this link to claim your free crypto."  
+❌ Output: **"INVALID"**
+
+---
+
+❌ **Abusive (Profanity)**  
+**Title:** "You are a moron"  
+**Content:** "Get lost, loser!"  
+❌ Output: **"ABUSIVE"**
+
+❌ **Abusive (Insulting)**  
+**Title:** "Your platform is trash"  
+**Content:** "You guys are so dumb and useless."  
+❌ Output: **"ABUSIVE"**
+
+---
+
+### 🚀 **Question:**
+**Title:** "${title}"  
+**Content:** "${content}"  
+
+✅ **Output:**  
+- Return only **"VALID"**, **"INVALID"**, or **"ABUSIVE"**.  
+- Do NOT include any other text, explanations, or formatting.  
+`;
+
+      try {
+        const validationSession = await model.startChat({
+          generationConfig,
+          history: [],
+        });
+        const validationResult =
+          await validationSession.sendMessage(validationPrompt);
+        const validationResponse = validationResult.response
+          .text()
+          .trim()
+          .toUpperCase();
+
+        if (validationResponse === "INVALID") {
+          return res
+            .status(400)
+            .json(
+              formatApiResponse(
+                400,
+                false,
+                null,
+                "This question is not a valid technical query.",
+              ),
+            );
+        }
+
+        if (validationResponse === "ABUSIVE") {
+          return res
+            .status(400)
+            .json(
+              formatApiResponse(
+                400,
+                false,
+                null,
+                "Inappropriate or abusive content detected.",
+              ),
+            );
+        }
+      } catch (error) {
+        console.error("Error validating question:", error);
+        return res
+          .status(500)
+          .json(
+            formatApiResponse(
+              500,
+              false,
+              null,
+              "Failed to validate question. Please try again.",
             ),
           );
       }
