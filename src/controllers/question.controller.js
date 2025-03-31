@@ -306,9 +306,7 @@ class QuestionController {
             },
           },
           answers: {
-            orderBy: {
-              createdAt: "desc",
-            },
+            orderBy: [{ factScore: "desc" }, { createdAt: "desc" }],
             include: {
               user: {
                 select: {
