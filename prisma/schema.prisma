@@ -43,6 +43,7 @@ model User {
   freeAskieQuota   Int       @default(10) 
   premiumAskieQuota Int      @default(50)  
   lastAskieUsed   DateTime? 
+  loginLogs        LoginLog[]   
 }
 
 model Question {
@@ -133,6 +134,39 @@ model Payment {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }
+
+model LoginLog {
+  id                  String       @id @default(uuid()) @unique
+  userId              String    
+  ip                  String?
+  city                String?
+  region              String?
+  region_code         String?
+  country_code        String?
+  country_code_iso3   String?
+  country             String? 
+  country_name        String?
+  country_capital     String?
+  country_tld         String?
+  continent_code      String?
+  in_eu               Boolean?
+  postal              String?
+  latitude            Float?
+  longitude           Float?
+  timezone            String?
+  utc_offset          String?
+  country_calling_code String?
+  currency            String?
+  currency_name       String?
+  languages           String?
+  asn                 String?
+  org                 String?
+  userAgent           String? 
+  createdAt           DateTime  @default(now())
+
+  user                User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
 
 model ChatSession{
   id          String   @id @default(uuid()) @unique

@@ -260,3 +260,39 @@ export const isEmptyOrWhitespace = (value) => {
 
   return sanitized === "";
 };
+
+export const saveSignInMetaData = async (userId, metadata) => {
+  try {
+    await prisma.loginLog.create({
+      data: {
+        userId: userId,
+        ip: metadata?.ip || null,
+        city: metadata?.city || null,
+        region: metadata?.region || null,
+        region_code: metadata?.region_code || null,
+        country_code: metadata?.country_code || null,
+        country_code_iso3: metadata?.country_code_iso3 || null,
+        country: metadata?.country_name || null,
+        country_name: metadata?.country_name || null,
+        country_capital: metadata?.country_capital || null,
+        country_tld: metadata?.country_tld || null,
+        continent_code: metadata?.continent_code || null,
+        in_eu: metadata?.in_eu || null,
+        postal: metadata?.postal || null,
+        latitude: metadata?.latitude || null,
+        longitude: metadata?.longitude || null,
+        timezone: metadata?.timezone || null,
+        utc_offset: metadata?.utc_offset || null,
+        country_calling_code: metadata?.country_calling_code || null,
+        currency: metadata?.currency || null,
+        currency_name: metadata?.currency_name || null,
+        languages: metadata?.languages || null,
+        asn: metadata?.asn || null,
+        org: metadata?.org || null,
+        userAgent: metadata?.userAgent || null,
+      },
+    });
+  } catch (error) {
+    console.error("Failed to save login metadata:", error);
+  }
+};

@@ -8,11 +8,12 @@ import {
   formatApiResponse,
   generateAccessToken,
   hashPassword,
+  saveSignInMetaData,
 } from "../utils/helper.js";
 
 class AuthController {
   static async signIn(req, res, next) {
-    const { email, password } = req.body;
+    const { email, password, metadata } = req.body;
 
     try {
       const user = await prisma.user.findUnique({
@@ -70,6 +71,10 @@ class AuthController {
         expires: new Date(Date.now() + 24 * 60 * 60 * 1000), // 1 day
         sameSite: CONFIG.NODE_ENV === "production" ? "none" : "lax",
       });
+
+      if (CONFIG.NODE_ENV === "production") {
+        await saveSignInMetaData(user.id, metadata);
+      }
 
       return res
         .status(200)
