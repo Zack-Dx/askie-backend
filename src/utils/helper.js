@@ -5,6 +5,7 @@ import mediaUploader from "../config/media/index.js";
 import { CONFIG } from "../config/env/index.js";
 import { prisma } from "../config/db/index.js";
 import { genAI } from "../config/ai/index.js";
+import { mailer } from "../config/mailer/index.js";
 
 export function formatApiResponse(statusCode, status, data, message) {
   return {
@@ -295,4 +296,16 @@ export const saveSignInMetaData = async (userId, metadata) => {
   } catch (error) {
     console.error("Failed to save login metadata:", error);
   }
+};
+
+export const mailUser = async (userEmail, subject, content) => {
+  if (!userEmail || !content || userEmail === CONFIG.DEMO_MAIL) {
+    return;
+  }
+  await mailer.emails.send({
+    from: CONFIG.MAIL_FROM,
+    to: userEmail,
+    subject: subject,
+    html: content,
+  });
 };

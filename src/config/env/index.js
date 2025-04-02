@@ -22,6 +22,9 @@ const {
   PAYMENT_WEBHOOK_SECRET,
   AI_KEY,
   BACKEND_HOST,
+  MAILER_API_KEY,
+  MAIL_FROM,
+  DEMO_MAIL,
 } = process.env;
 
 export const CONFIG = {
@@ -45,4 +48,7 @@ export const CONFIG = {
   CLIENT_URL,
   PAYMENT_WEBHOOK_SECRET,
   AI_KEY,
+  MAILER_API_KEY,
+  MAIL_FROM,
+  DEMO_MAIL,
 };
