@@ -291,6 +291,7 @@ export const saveSignInMetaData = async (userId, metadata) => {
         asn: metadata?.asn || null,
         org: metadata?.org || null,
         userAgent: metadata?.userAgent || null,
+        provider: metadata?.provider || null,
       },
     });
   } catch (error) {

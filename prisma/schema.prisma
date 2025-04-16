@@ -163,7 +163,7 @@ model LoginLog {
   org                 String?
   userAgent           String? 
   createdAt           DateTime  @default(now())
-
+  provider            String? 
   user                User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
