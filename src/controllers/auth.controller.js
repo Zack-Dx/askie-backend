@@ -93,7 +93,7 @@ class AuthController {
 
   static async signInWithGoogle(req, res, next) {
     try {
-      const { token } = req.body;
+      const { token, metadata } = req.body;
 
       if (!token) {
         return res
@@ -144,6 +144,10 @@ class AuthController {
         sameSite: CONFIG.NODE_ENV === "production" ? "none" : "lax",
       });
 
+      if (CONFIG.NODE_ENV === "production") {
+        await saveSignInMetaData(user.id, metadata);
+      }
+
       return res
         .status(200)
         .json(
@@ -161,7 +165,7 @@ class AuthController {
 
   static async signInWithGithub(req, res, next) {
     try {
-      const { code } = req.body;
+      const { code, metadata } = req.body;
 
       const tokenResponse = await fetch(
         `https://github.com/login/oauth/access_token?client_id=${CONFIG.GITHUB_CLIENT_ID}&client_secret=${CONFIG.GITHUB_CLIENT_SECRET}&code=${code}`,
@@ -246,6 +250,10 @@ class AuthController {
         sameSite: CONFIG.NODE_ENV === "production" ? "none" : "lax",
       });
 
+      if (CONFIG.NODE_ENV === "production") {
+        await saveSignInMetaData(user.id, metadata);
+      }
+
       return res
         .status(200)
         .json(
@@ -262,7 +270,7 @@ class AuthController {
   }
 
   static async signUpUser(req, res, next) {
-    const { name, email, password } = req.body;
+    const { name, email, password, metadata } = req.body;
 
     if (!name || !email || !password) {
       return res
@@ -317,6 +325,10 @@ class AuthController {
         expires: new Date(Date.now() + 24 * 60 * 60 * 1000), // 1 day
         sameSite: CONFIG.NODE_ENV === "production" ? "none" : "lax",
       });
+
+      if (CONFIG.NODE_ENV === "production") {
+        await saveSignInMetaData(user.id, metadata);
+      }
 
       return res
         .status(201)
