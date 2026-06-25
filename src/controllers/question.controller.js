@@ -1,4 +1,4 @@
-import { genAI } from "../config/ai/index.js";
+import { GEMINI_MODEL, genAI } from "../config/ai/index.js";
 import { cacheClient, prisma } from "../config/db/index.js";
 import {
   deleteMediaFromCloud as deleteMedia,
@@ -39,7 +39,7 @@ class QuestionController {
       };
 
       const model = genAI.getGenerativeModel({
-        model: "gemini-2.0-flash-lite-preview-02-05",
+        model: GEMINI_MODEL,
       });
 
       /*  Validation */
@@ -555,7 +555,7 @@ Your goal is to **allow only high-quality, on-topic questions** and block any of
       };
 
       const model = genAI.getGenerativeModel({
-        model: "gemini-2.0-flash-lite-preview-02-05",
+        model: GEMINI_MODEL,
       });
 
       /*  Validation */
@@ -875,7 +875,7 @@ Your goal is to **allow only high-quality, on-topic questions** and block any of
       };
 
       const model = genAI.getGenerativeModel({
-        model: "gemini-2.0-flash-lite-preview-02-05",
+        model: GEMINI_MODEL,
       });
 
       const prompt = `

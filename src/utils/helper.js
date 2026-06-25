@@ -4,7 +4,7 @@ import fs from "node:fs/promises";
 import mediaUploader from "../config/media/index.js";
 import { CONFIG } from "../config/env/index.js";
 import { prisma } from "../config/db/index.js";
-import { genAI } from "../config/ai/index.js";
+import { GEMINI_MODEL, genAI } from "../config/ai/index.js";
 import { mailer } from "../config/mailer/index.js";
 
 export function formatApiResponse(statusCode, status, data, message) {
@@ -219,7 +219,7 @@ You are an AI fact-checker with expert-level accuracy. Your job is to thoroughly
 `;
 
   const model = genAI.getGenerativeModel({
-    model: "gemini-2.0-flash-lite-preview-02-05",
+    model: GEMINI_MODEL,
   });
 
   const generationConfig = {

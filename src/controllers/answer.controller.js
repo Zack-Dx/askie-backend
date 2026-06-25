@@ -5,7 +5,7 @@ import {
   formatApiResponse,
   isEmptyOrWhitespace,
 } from "../utils/helper.js";
-import { genAI } from "../config/ai/index.js";
+import { GEMINI_MODEL, genAI } from "../config/ai/index.js";
 import crypto from "node:crypto";
 
 class AnswerController {
@@ -324,7 +324,7 @@ class AnswerController {
       };
 
       const model = genAI.getGenerativeModel({
-        model: "gemini-2.0-flash-lite-preview-02-05",
+        model: GEMINI_MODEL,
       });
 
       let sessionId = null;
